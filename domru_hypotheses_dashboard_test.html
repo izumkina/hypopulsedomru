@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дом.ру · ШПД физлицам — что дали тесты в контекстной рекламе</title>
+<style>
+  :root{
+    --ink:#14171c; --ink-2:#3a414c; --muted:#6b7480;
+    --paper:#ffffff; --surface:#f4f6fa; --surface-2:#eceff5;
+    --rule:#e1e6ed; --rule-strong:#ccd3dd;
+
+    --brand:#E30613; --brand-deep:#ba040f; --brand-wash:#fcebec;
+    --scale:#0b7a55; --scale-wash:#e8f5f0;
+    --reject:#79828f; --reject-wash:#eef0f3;
+    --pending:#b7791f; --pending-wash:#fdf4e3;
+
+    --r-sm:8px; --r-md:12px;
+    --shadow:0 1px 2px rgba(20,23,28,.04), 0 8px 24px rgba(20,23,28,.06);
+    --display:"Inter Tight","Inter","Helvetica Neue",Arial,sans-serif;
+    --body:"Inter",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    --data:ui-monospace,"JetBrains Mono","SFMono-Regular","Menlo",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--surface);color:var(--ink);font-family:var(--body);
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{width:min(100% - 32px,1320px);margin:0 auto}
+
+  /* Every figure uses the data face with tabular numerals so columns of CPA/CR
+     line up optically and can be compared by eye. */
+  .mono{font-family:var(--data);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+  h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;margin:0}
+  h1{font-size:clamp(26px,3.2vw,38px);font-weight:800;line-height:1.05}
+  h2{font-size:clamp(19px,2vw,25px);font-weight:800;line-height:1.12}
+  .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted)}
+  .note{color:var(--muted);font-size:14px;margin:6px 0 0;max-width:80ch}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.93);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:56px}
+  .brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:800;
+    font-size:16px;letter-spacing:-.01em}
+  .brand i{width:8px;height:8px;border-radius:2px;background:var(--brand);display:block}
+  .nav{display:flex;gap:2px}
+  .nav a{color:var(--muted);text-decoration:none;font-size:13.5px;font-weight:600;
+    padding:7px 11px;border-radius:var(--r-sm)}
+  .nav a:hover{color:var(--ink);background:var(--surface)}
+
+  /* ---------- verdict ---------- */
+  .verdict{background:var(--paper);border-bottom:1px solid var(--rule);padding:34px 0 26px}
+  .vtop{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:end}
+  .verdict h1{margin:10px 0 0}
+  .lead{color:var(--ink-2);font-size:16px;margin:12px 0 0;max-width:62ch}
+  .lead b{font-family:var(--data);font-variant-numeric:tabular-nums;font-weight:700}
+
+  .outcome{display:flex;height:32px;border-radius:var(--r-sm);overflow:hidden;
+    border:1px solid var(--rule)}
+  .outcome span{display:flex;align-items:center;justify-content:center;font-family:var(--data);
+    font-size:12.5px;font-weight:700;color:#fff;min-width:0}
+  .okey{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .okey i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:6px}
+
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:26px;
+    border-top:1px solid var(--rule)}
+  .stat{padding:15px 20px 0;border-right:1px solid var(--rule)}
+  .stat:last-child{border-right:none} .stat:first-child{padding-left:0}
+  .stat b{display:block;font-family:var(--data);font-variant-numeric:tabular-nums;font-size:27px;
+    font-weight:700;letter-spacing:-.03em;line-height:1}
+  .stat span{display:block;color:var(--muted);font-size:12.5px;margin-top:7px}
+
+  /* ---------- filters ---------- */
+  .filterbar{position:sticky;top:56px;z-index:20;background:rgba(255,255,255,.95);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--rule);padding:11px 0}
+  .frow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .frow + .frow{margin-top:7px}
+  .flabel{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);min-width:56px;flex:none}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;min-width:0}
+  .chip{font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;
+    border:1px solid var(--rule-strong);background:var(--paper);color:var(--ink-2);cursor:pointer;
+    white-space:nowrap}
+  .chip:hover{border-color:var(--ink);color:var(--ink)}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  .chip .c{font-family:var(--data);opacity:.6;margin-left:5px;font-size:11.5px}
+  .chip.ghost{border-style:dashed;color:var(--muted)}
+  .search{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;
+    border:1px solid var(--rule-strong);background:var(--paper);min-width:240px;outline:none;
+    color:var(--ink)}
+  .search:focus{border-color:var(--ink)}
+  .fcount{margin-left:auto;font-family:var(--data);font-size:12.5px;color:var(--muted);
+    white-space:nowrap}
+
+  .dd{position:relative}
+  .dd-btn{font:inherit;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;
+    padding:6px 12px;border-radius:999px;border:1px solid var(--rule-strong);background:var(--paper);
+    color:var(--ink-2);cursor:pointer}
+  .dd-btn:hover,.dd.open .dd-btn{border-color:var(--ink);color:var(--ink)}
+  .dd-btn svg{opacity:.5;transition:transform .15s}
+  .dd.open .dd-btn svg{transform:rotate(180deg)}
+  .dd-panel{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:268px;z-index:5;
+    background:var(--paper);border:1px solid var(--rule);border-radius:var(--r-md);
+    box-shadow:var(--shadow);padding:6px}
+  .dd.open .dd-panel{display:block}
+  .dd-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;
+    border-radius:var(--r-sm);font-size:13.5px;cursor:pointer}
+  .dd-item:hover{background:var(--surface)}
+  .dd-item .ck{opacity:0;color:var(--brand);font-weight:800}
+  .dd-item.on .ck{opacity:1}
+  .dd-sep{height:1px;background:var(--rule);margin:5px 4px}
+  .dd-custom{display:none;padding:4px 10px 8px}
+  .dd-custom.show{display:block}
+  .dd-custom .r{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+  .dd-custom input{font:inherit;font-family:var(--data);font-size:12.5px;flex:1;min-width:0;
+    padding:6px 8px;border:1px solid var(--rule-strong);border-radius:var(--r-sm)}
+  .dd-custom button{width:100%;font:inherit;font-size:13px;font-weight:700;padding:7px;border:none;
+    border-radius:var(--r-sm);background:var(--ink);color:#fff;cursor:pointer}
+
+  /* ---------- the timeline: the page's single object ---------- */
+  .section{padding:36px 0 60px}
+  .section-head{margin-bottom:18px}
+  .head-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+  .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
+
+  .tl{background:var(--paper);border:1px solid var(--rule);border-radius:var(--r-md);
+    padding:12px 16px 6px;overflow:hidden}
+  .tl-axis{position:relative;height:20px;margin-left:var(--lab,330px);
+    border-bottom:1px solid var(--rule);margin-bottom:2px}
+  .tl-axis i{position:absolute;top:0;bottom:0;font-family:var(--data);font-size:10.5px;
+    font-style:normal;color:var(--muted);white-space:nowrap;border-left:1px solid var(--rule);
+    padding-left:5px}
+  .tl-axis i.today{border-left:1.5px solid var(--brand);color:var(--brand);font-weight:700;
+    background:var(--paper);padding-right:4px;z-index:2}
+  /* When today sits near the right edge, hang the caption to the left of its
+     line so it can't be clipped by the card. */
+  .tl-axis i.today.flip{border-left:none;border-right:1.5px solid var(--brand);
+    padding:0 5px 0 0;transform:translateX(-100%);text-align:right}
+
+  .item{border-top:1px solid var(--rule)}
+  .item:first-child{border-top:none}
+  .row{display:flex;align-items:center;gap:0;min-height:38px;cursor:pointer;
+    background:none;border:none;width:100%;padding:0;font:inherit;text-align:left;color:inherit}
+  .row:hover{background:var(--surface)}
+  .item.open > .row{background:var(--surface)}
+  .lab{width:var(--lab,330px);flex:none;padding:6px 14px 6px 0;display:flex;gap:9px;
+    align-items:baseline;min-width:0}
+  .lab .id{font-family:var(--data);font-size:11.5px;font-weight:700;color:var(--muted);flex:none;
+    width:26px}
+  .lab .nm{flex:1;min-width:0;font-size:13px;line-height:1.3;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap}
+  .lab .per{font-family:var(--data);font-size:10.5px;color:var(--muted);flex:none}
+  .track{position:relative;flex:1;height:38px;min-width:0}
+  .track .g{position:absolute;top:0;bottom:0;border-left:1px solid var(--surface-2)}
+  .track .g.today{border-left:1.5px solid rgba(227,6,19,.38)}
+  .bar{position:absolute;top:14px;height:10px;border-radius:5px;min-width:3px}
+  .bar.scale{background:var(--scale)} .bar.reject{background:var(--reject)}
+  .bar.pending{background:var(--pending)}
+  .bar .tick{position:absolute;top:-2px;width:1.5px;height:14px;background:rgba(255,255,255,.8)}
+  .caret{flex:none;width:46px;display:flex;align-items:center;justify-content:center}
+  .caret i{width:26px;height:26px;border-radius:50%;border:1px solid var(--rule-strong);
+    background:var(--paper);color:var(--muted);display:flex;align-items:center;
+    justify-content:center;transition:transform .18s ease,border-color .15s,color .15s,
+    background-color .15s}
+  .row:hover .caret i{border-color:var(--ink);color:var(--ink)}
+  .item.open .caret i{transform:rotate(180deg);border-color:var(--brand);color:var(--brand);
+    background:var(--brand-wash)}
+
+  /* An open hypothesis reads as one block: a brand rail down its left edge and
+     its own surface, so it's obvious what the panel belongs to and what will
+     collapse. */
+  .item.open{background:var(--surface);box-shadow:inset 3px 0 0 var(--brand);
+    border-radius:0 var(--r-sm) var(--r-sm) 0;margin:2px 0}
+  .item.open > .row{background:transparent}
+  .item.open + .item{border-top-color:transparent}
+
+  /* ---------- expanded hypothesis ---------- */
+  .panel{padding:2px 20px 22px 18px}
+  .pmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .pill.scale{background:var(--scale-wash);color:var(--scale)}
+  .pill.reject{background:var(--reject-wash);color:var(--reject)}
+  .pill.pending{background:var(--pending-wash);color:#8a5a12}
+  .pmeta .m{font-size:12.5px;color:var(--muted)}
+  .pmeta .m b{font-family:var(--data);font-variant-numeric:tabular-nums;color:var(--ink-2);
+    font-weight:700}
+  .pmeta .orig{font-size:11.5px;color:var(--muted);font-style:italic}
+
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;
+    margin-bottom:18px}
+  .fig{border:1px solid var(--rule);border-radius:var(--r-sm);background:var(--surface);
+    padding:11px 13px}
+  .fig .k{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:6px}
+  .fig .v{font-family:var(--data);font-variant-numeric:tabular-nums;font-size:20px;font-weight:700;
+    letter-spacing:-.02em}
+
+  .plabel{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 8px}
+  .src{overflow:auto;border:1px solid var(--rule);border-radius:var(--r-sm);background:var(--paper);
+    max-height:380px}
+  .src + .src{margin-top:10px}
+  table.st{width:100%;border-collapse:collapse;font-size:12.5px}
+  .st th{position:sticky;top:0;z-index:2;background:var(--surface-2);text-align:right;
+    padding:8px 10px;font-size:10.5px;font-weight:800;letter-spacing:.04em;color:var(--muted);
+    white-space:nowrap;border-bottom:1px solid var(--rule)}
+  .st th:first-child{text-align:left;left:0;z-index:3}
+  .st td{padding:7px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--rule);
+    font-family:var(--data);font-variant-numeric:tabular-nums}
+  .st td:first-child{text-align:left;font-family:var(--body);position:sticky;left:0;
+    background:var(--paper);z-index:1;max-width:260px;white-space:normal}
+  .st tbody tr:last-child td{border-bottom:none}
+  .st tr.tot td{background:var(--brand-wash);font-weight:700}
+  .st tr.tot td:first-child{background:var(--brand-wash);color:var(--brand-deep)}
+  .cap{font-family:var(--data);font-size:11.5px;color:var(--muted);margin:0 0 6px}
+  .no-src{font-size:13px;color:var(--muted);background:var(--surface);
+    border:1px dashed var(--rule-strong);border-radius:var(--r-sm);padding:12px 14px}
+
+  /* conclusions, set as a readable two-column brief with the takeaway called out */
+  .concl{margin-top:22px;border-top:1px solid var(--rule);padding-top:18px}
+  .cgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+  .cblock span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .cblock p{margin:0;font-size:14.5px;line-height:1.6;color:var(--ink-2)}
+  .takeaway{margin-top:18px;background:var(--brand-wash);border-left:3px solid var(--brand);
+    border-radius:0 var(--r-sm) var(--r-sm) 0;padding:15px 18px}
+  .takeaway span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--brand-deep);margin-bottom:6px}
+  .takeaway p{margin:0;font-size:15.5px;line-height:1.6;color:var(--ink)}
+  mark{background:#fff;color:var(--brand-deep);font-family:var(--data);
+    font-variant-numeric:tabular-nums;font-weight:700;padding:0 4px;border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+  .cblock mark{background:var(--brand-wash)}
+
+  .empty{padding:26px 4px;text-align:center;color:var(--muted);font-size:13.5px}
+  footer{padding:0 0 40px;color:var(--muted);font-size:12.5px}
+  footer .wrap{border-top:1px solid var(--rule);padding-top:18px}
+
+  :where(a,button,input,select,[tabindex]):focus-visible{outline:2px solid var(--brand);
+    outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  }
+  @media (max-width:1080px){
+    .vtop{grid-template-columns:minmax(0,1fr);gap:24px}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .stat{border-bottom:1px solid var(--rule);padding-bottom:14px}
+    .stat:nth-child(2){border-right:none}
+    .tl{--lab:250px}
+  }
+  @media (max-width:760px){
+    body{font-size:14.5px}
+    .topbar .wrap{height:52px}
+    .nav a{padding:6px 8px;font-size:12.5px}
+    .verdict{padding:24px 0 20px}
+    .section{padding:26px 0 44px}
+    .filterbar{position:static}
+    .frow{flex-direction:column;align-items:flex-start;gap:7px}
+    .frow .search{width:100%;min-width:0}
+    .chips{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:3px}
+    .fcount{margin-left:0}
+    .tl{padding:10px 12px 4px}
+    .tl-axis{display:none}
+    /* On a phone the bar can't be read next to a 250px label, so the row stacks:
+       name on top, bar full width underneath. */
+    .row{flex-wrap:wrap;padding:8px 0}
+    .lab{--lab:auto;width:100%;padding:0 0 6px}
+    .lab .nm{white-space:normal}
+    .track{width:100%;flex:1 0 100%;height:24px}
+    .bar{top:7px}
+    .caret{position:absolute;right:2px;top:4px;width:26px}
+    .item{position:relative}
+    .cgrid{grid-template-columns:minmax(0,1fr);gap:16px}
+    .figs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>
+</head>
+<body>
+<noscript>
+  <div style="background:var(--brand-wash);color:var(--brand-deep);padding:14px 20px;
+    text-align:center;font-size:14px;border-bottom:2px solid var(--brand)">
+    Страница интерактивная и требует JavaScript. Если файл открыт в режиме быстрого просмотра —
+    откройте его в браузере.
+  </div>
+</noscript>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><i></i>Дом.ру · ШПД физлицам</div>
+    <nav class="nav">
+      <a href="#verdict">Итог</a>
+      <a href="#timeline">Таймлайн</a>
+    </nav>
+  </div>
+</header>
+
+<section class="verdict" id="verdict">
+  <div class="wrap">
+    <div class="vtop">
+      <div>
+        <div class="eyebrow">Программа тестов · ШПД физлицам · срез на 06.08.2026</div>
+        <h1>Что дали тесты в контекстной рекламе</h1>
+        <p class="lead" id="lead"></p>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:9px">Чем закончились тесты</div>
+        <div class="outcome" id="outcome"></div>
+        <div class="okey" id="okey"></div>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</section>
+
+<div class="filterbar">
+  <div class="wrap">
+    <div class="frow">
+      <span class="flabel">Статус</span>
+      <div class="chips" id="fStatus"></div>
+      <span class="fcount" id="fCount"></span>
+    </div>
+    <div class="frow">
+      <span class="flabel">Канал</span>
+      <div class="chips" id="fChannel"></div>
+    </div>
+    <div class="frow">
+      <span class="flabel">Период</span>
+      <div class="dd" id="dd">
+        <button type="button" class="dd-btn" id="ddBtn">
+          <span id="ddLabel">Весь период</span>
+          <svg width="9" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4"
+            stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+        </button>
+        <div class="dd-panel" id="ddPanel">
+          <div class="dd-item on" data-preset="all">Весь период<span class="ck">✓</span></div>
+          <div class="dd-item" data-preset="custom">Указать период<span class="ck">✓</span></div>
+          <div class="dd-custom" id="ddCustom">
+            <div class="r"><input type="date" id="dFrom"><span>—</span><input type="date" id="dTo"></div>
+            <button type="button" id="ddApply">Применить</button>
+          </div>
+          <div class="dd-sep"></div>
+          <div class="dd-item" data-preset="last7">Последние 7 дней<span class="ck">✓</span></div>
+          <div class="dd-item" data-preset="last30">Последние 30 дней<span class="ck">✓</span></div>
+          <div class="dd-sep"></div>
+          <div id="ddMonths"></div>
+        </div>
+      </div>
+      <input class="search" id="fSearch" type="search" placeholder="Поиск по номеру или названию…">
+      <button type="button" class="chip ghost" id="fReset">Сбросить</button>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="timeline">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="head-row">
+        <h2>Когда что тестировали</h2>
+        <div class="legend">
+          <span><i style="background:var(--scale)"></i>масштабируем или внедрили</span>
+          <span><i style="background:var(--reject)"></i>отклонили</span>
+          <span><i style="background:var(--pending)"></i>в работе</span>
+        </div>
+      </div>
+      <p class="note">Полоса — от внедрения до последней отметки сбора статистики, засечки внутри —
+        промежуточные срезы. Красная линия — 06.08.2026. Нажмите на гипотезу, чтобы увидеть
+        её цифры и выводы. <span id="tlNote"></span></p>
+    </div>
+    <div class="tl">
+      <div class="tl-axis" id="axis"></div>
+      <div id="rows"></div>
+      <div class="empty" id="empty" style="display:none">Под фильтры не попала ни одна гипотеза.</div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">Источники: вкладки «бэклог гипотез» и «статистика по гипотезам» · Дом.ру, ШПД физлицам · гипотезы №1–49, 45 записей · период 01.06–13.08</div></footer>
+
+<script>
+const TODAY=new Date('2026-08-06');
+const H=[{"id":1,"name":"Запуск по базовым запросам без ключей конкурентов либо на текущих либо в новых рк либо параллельно на тест","rkRaw":"МК на ШПД","groupRk":"Мастер кампаний","goal":"Снижение CPL","effect":"Средняя","priority":"Высокий","hours":2.0,"marker":"Не масштабируем","markerBucket":"negative","owner":"Агентство","what":"Подготовили новые мастера кампаний с категоричными запросами в городах Брянск, Волгоград и Иркутск","result":"Результат с 6 по 14 июня. CPL в новых кампаниях в среднем 1 200р, в старых кампаниях он держится на уровне 637р. CPL ЦО в новых кампаниях в среднем 15 800, в старых 2 300","conclusion":"По результатам теста, перезапуск мастеров кампаний не дал прироста в конверсиях и ЦО. Новые кампании приостановлены, вернул в работу старые.","dates":["2026-06-06"],"hasResult":true,"ganttStatus":"result","displayStatus":"Не масштабируем","displayBucket":"negative"},{"id":2,"name":"Тест усиления кампаний РСЯ в городах, где этот тип показывает высокую эффективность","rkRaw":"РСЯ","groupRk":"РСЯ","goal":"Снижение CPL","effect":"Средняя","priority":"Высокий","hours":2.0,"marker":"Не масштабируем","markerBucket":"negative","owner":"Агентство","what":"Тестовый перенос 10–20% бюджета из поиска в сети","result":"По результатам теста, CPL первичных конверсий 818р., в рамках текущего плана, но CPL ЦО в 3-4 раза дороже нормы и находится на уровне 11 544р.","conclusion":"По результатам двух недель работы в июне стоимость ЦО не опустилась ниже 11 000 Кампании остановил, бюджет вернул на мастера кампаний","dates":["2026-06-01"],"hasResult":true,"ganttStatus":"result","displayStatus":"Не масштабируем","displayBucket":"negative"},{"id":3,"name":"Масштабирование кампании performance | all_geo | search","rkRaw":"performance | all_geo | search","groupRk":"performance | all_geo | search","goal":"Повышение количества лидов","effect":"Высокая","priority":"Высокий","hours":1.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Увеличили объемы трафика за счет расширения бюджета.","result":"планируем собрать данные 25.06. По результатам масштабирования видим, что кампания упирается в лимиты по спросу, при недельном бюджете в 910к расход не превышает 860-870к в неделю. Так же больше недельные лимиты меняют работу алгоритмов стратегии, трафик начинает дорожать а стоимость конверсии увеличивается потому что автотаргетинг выкупая весь недорогой трафик начинает реализовывать бюджет за счёт более дорогих поисковых запросов, например категорийных ключей с привязкой к домашнему интернету.","conclusion":"По результатам масштабирования видим, что кампания упирается в лимиты по спросу, при недельном бюджете в 910к расход не превышает 860-870к в неделю. Так же больше недельные лимиты меняют работу алгоритмов стратегии, трафик начинает дорожать а стоимость конверсии увеличивается потому что автотаргетинг выкупая весь недорогой трафик начинает реализовывать бюджет за счёт более дорогих поисковых запросов, например категорийных ключей с привязкой к домашнему интернету. Рекомендуем не увеличивать лимиты в кампании выще 700к в неделю для оптимальной работы автостратегии","dates":["2026-06-03","2026-06-25"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"","columns":["Неделя","Название кампании","Расход, ₽","Клики","Показы","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %","Комментарий"],"rows":[["01.06.2026 - 07.06.2026","b2c | 1rub | perfomance | all_geo | search","899 222,14 ₽","14 195","75 740","18,74","63,35","1 454","618,45 ₽","10,24","Первая неделя после увеличения бюджетов"],["08.06.2026 - 14.06.2026","b2c | 1rub | perfomance | all_geo | search","889 067,52 ₽","8 623","66 360","12,99","103,1","1 011","879,39 ₽","11,72",""],["15.06.2026 - 21.06.2026","b2c | 1rub | perfomance | all_geo | search","878 618,11 ₽","7 695","50 002","15,39","114,18","912","963,4 ₽","11,85",""],["22.06.2026 - 28.06.2026","b2c | 1rub | perfomance | all_geo | search","857 580,49 ₽","6 283","42 316","14,85","136,49","762","1 125,43 ₽","12,13",""]]}],"statsPeriod":""},{"id":4,"name":"Анализ ключевых запросов с ЦО","rkRaw":"выгрузка ЦО","groupRk":"выгрузка ЦО","goal":"Повышение количества лидов","effect":"Высокая","priority":"Высокий","hours":4.0,"marker":"Выделены эффективные кластеры запросов","markerBucket":"positive","owner":"Агентство","what":"Выявлены наиболее конверсионные фразы","result":"Проанализировали выгрузку с ЦО по ключевым словам, выделили наиболее эффективные кластеры запросов","conclusion":"Меняем структуру текущих категорийных рк, разводим их по 3 основным кластером эффективных ключей: Домашний интернет (наиболее конверсионные) Запросы с привязками к тарифам ( средне конверсионные) Запросы с интернет провайдерами ( наиболее дорогие/менее конверсионные) Запросы информационного характера, например: какой, как, где и т.д. исключаем из за низкой эффективности","dates":["2026-06-11"],"hasResult":true,"ganttStatus":"result","displayStatus":"Выделены эффективные кластеры запросов","displayBucket":"positive"},{"id":5,"name":"Разделение и оптимизация категорийных поисковых кампаний основываясь на данных по ЦО","rkRaw":"Поиск Категория","groupRk":"Поиск","goal":"Снижение CPL","effect":"Высокая","priority":"Высокий","hours":6.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Планируем разделить категорийные кампании на 3 кластера запросов: домашний интернет, Интернет провайдер , Запросы с тарифами","result":"После разделения кампаний видим стоимости по каждой из категорий. Драйвером конверсий является категория \"Домашний интернет\"\n\"Домашний интернет\" CPL : р.3 177,03\n\"Тариф\" CPL : р.3 701,51\n\"Провайдер\" CPL : р.4 269,07\n\nПо итогам июня и первым данным июля видим, что кампании продолжают оптимизироваться и улучшаться в показателях. CPL снизился во всех типах кампаний, CR вырос до 7,9% в тотале. Драйвером по стоимости и объёмам остаётся домашний интернет, при этом запросы по интернет провайдерам тоже стали показывать хорошие результаты после масштабирования.\nДомашний интернет CPL : р.2 606\nТариф CPL : р.3 655,42\nПровайдер CPL : р.2 752,65","conclusion":"Поскольку стоимость лида по сравнению с брендовым трафиком всёровно остаётся высокой, кампании не масштабируем, но оставляем в работе и оптимизируем.","dates":["2026-06-18","2026-07-07"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"","columns":["Названия строк","Клики Июнь","Клики Июль","Показы Июнь","Показы Июль","Расход Июнь","Расход Июль","Конверсии Июнь","Конверсии Июль","Фулбай Июнь","Фулбай Июль","CPL Июнь","CPL Июль","CR Июнь","CR Июль"],"rows":[["provaider","1 417","538","23 970","8 594","280 871 ₽","115 611 ₽","95","40","1","2","2 926 ₽","2 753 ₽","6,77%","7,81%"],["домашний интернет","1 709","694","23 490","9 602","381 273 ₽","164 179 ₽","118","56","6","7","3 075 ₽","2 606 ₽","7,26%","9,08%"],["тарифы","735","322","8 455","3 805","158 995 ₽","65 798 ₽","43","18","2","0","3 533 ₽","3 655 ₽","6,12%","5,59%"],["Общий итог","3 861","1 554","55 915","22 001","821 139 ₽","345 587 ₽","256","114","9","9","3 099 ₽","2 810 ₽","6,86%","7,92%"]]}],"statsPeriod":""},{"id":6,"name":"Оптимизация категорийных кампаний","rkRaw":"Поиск Категория","groupRk":"Поиск","goal":"Снижение CPL","effect":"Высокая","priority":"Высокий","hours":1.0,"marker":"Масштабируем","markerBucket":"positive","owner":"Агентство","what":"Масштабируем более конверсионный десктопный трафик за счёт понижающей корректировки на смартфоны (Android), а так же сократить долю дорогой аудитории 18-24.","result":"После настройки корректировок - 60 на Android и -30 на аудиторию 18-24 CPL снизился на 25%","conclusion":"Оставляем корректировку в работе","dates":["2026-06-10"],"hasResult":true,"ganttStatus":"result","displayStatus":"Масштабируем","displayBucket":"positive"},{"id":7,"name":"Разделение и оптимизация категорийных поисковых кампаний","rkRaw":"Поиск Категория","groupRk":"Поиск","goal":"Снижение CPL","effect":"Средняя","priority":"Высокий","hours":1.0,"marker":"Масштабируем","markerBucket":"positive","owner":"Агентство","what":"Исключаем из категории запросы с упоминанием Wi-Fi из-за низкой эффективности","result":"Объём трафика в категории домашнего интернета вырос на 8%","conclusion":"Бюджет перетёк в более эффективный тип запросов","dates":["2026-06-10"],"hasResult":true,"ganttStatus":"result","displayStatus":"Масштабируем","displayBucket":"positive"},{"id":8,"name":"Тест комбинаторных объявлений","rkRaw":"Все Москва","groupRk":"Все Москва","goal":"Улучшение CTR","effect":"Низкая","priority":"Высокий","hours":2.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Планируем запустить комбинаторные объявления во всех кампаниях Ринета","result":"Запустил комбинаторные объявления, старые приостановил, тестируем. По результатам среза видим, что комбинаторные объявления работают на ровне с ТГ, пока даже немного похуже, разница незначительная и скорее всего связана с небольшим периодом работы","conclusion":"Оставляем комбинаторные объявления в работе, так как результат примерно на уровне ТГ и потенциально будет расти. Так же нужно отметить, что ТГ объявления скоро уберут из интерфейса и нам придётся работать с комбинаторными объявлениями в любом случае.","dates":["2026-06-19","2026-06-25","2026-07-07"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период: 09.06.2026 - 28.06.2026","columns":["Тип объявления","Расход, ₽","Клики","Показы","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["Итого","257 393,51 ₽","4 267","23 997","17,78","60,31","244","1 055,01 ₽","5,72"],["Текстово-графическое","176 109,56 ₽","2 844","15 125","18,8","61,92","170","1 035,94 ₽","5,98"],["Комбинаторное","81 283,94 ₽","1 423","8 872","16,04","57,12","74","1 098,43 ₽","5,2"]]}],"statsPeriod":"Период: 09.06.2026 - 28.06.2026"},{"id":9,"name":"Собрать семантическое ядро по конкурентам","rkRaw":"РСЯ Конкуренты","groupRk":"РСЯ","goal":"Повышение количества лидов","effect":"Средняя","priority":"Высокий","hours":2.0,"marker":"Не масштабируем","markerBucket":"negative","owner":"Агентство","what":"Собрали семантику по ключевым конкурентам: Билайн, Мегафон, МТС, Ростелеком, ТТК","result":"Собрали большое семантическое ядро (до 1000 ключей) для теста кампаний в ШПД","conclusion":"Запускаем в тестовых рк (см строчку 12)","dates":["2026-06-17"],"hasResult":true,"ganttStatus":"result","displayStatus":"Не масштабируем","displayBucket":"negative"},{"id":10,"name":"Запуск кампаний по запросам конкурентов","rkRaw":"РСЯ Конкуренты","groupRk":"РСЯ","goal":"Повышение количества лидов","effect":"Высокая","priority":"Высокий","hours":3.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Запустили кампании ЕПК на поиске и РСЯ с оплатой по CPL в городах: Екатеринбург, Пермь, Ростов на Дону, Самара","result":"Запустили на тест кампании по конкурентам в Поиске и РСЯ с моделью оплаты по CPA .\nПоскольку стратегии настроены с моделью оплаты по CPA, то данные по кампаниям немного. Больше всего трафика и конверсий пришло с РСЯ, при этом стоимость конверсии для конкурентных кампаний достаточно низкая ( 1086 р). Поисковые кампании на данной стратегии эффективно обучаться не могут.","conclusion":"Оставляем сети на модели оплаты по CPA, пробуем масштабировать в них бюджет для увеличения результата. Поиск в июле тестово переведём на максимум конверсий с оплатой за клики, так как на текущих стратегия кампании не работают","dates":["2026-06-18","2026-06-25"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период: 18.06.2026 - 28.06.2026","columns":["Название кампании","№ Кампании","Расход, ₽","Клики","Показы","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["Итого","—","13 036,67 ₽","4 021","259 110","1,55","3,24","12","1 086,39 ₽","0,3"],["b2c | 1rub | konkurenty | samara | net","710 823 186","8 060 ₽","1 842","134 024","1,37","4,38","8","1 007,5 ₽","0,43"],["b2c | 1rub | konkurenty | rostovnadonu | net","710 823 171","3 130 ₽","1 066","51 754","2,06","2,94","3","1 043,33 ₽","0,28"],["b2c | 1rub | konkurenty | perm | net","710 823 155","1 800 ₽","678","43 895","1,54","2,65","1","1 800 ₽","0,15"],["b2c | 1rub | konkurenty | ekaterinburg | net","710 823 053","0 ₽","411","28 492","1,44","0","0","—","0"],["b2c | 1rub | konkurenty | ekaterinburg | search","710 823 087","0 ₽","12","244","4,92","0","0","—","0"],["b2c | 1rub | konkurenty | perm | search","710 823 095","0 ₽","2","98","2,04","0","0","—","0"],["b2c | 1rub | konkurenty | rostovnadonu | search","710 823 106","0 ₽","6","388","1,55","0","0","—","0"],["b2c | 1rub | konkurenty | samara | search","710 823 126","0 ₽","3","188","1,6","0","0","—","0"],["b2c | 1rub | konkurenty | tviks | search","708 569 957","46,67 ₽","1","27","3,7","46,67","0","—","0"]]}],"statsPeriod":"Период: 18.06.2026 - 28.06.2026"},{"id":11,"name":"Внедрить корректировки в кампании по роутерам","rkRaw":"Поиск Категория","groupRk":"Поиск","goal":"Улучшение CTR","effect":"Низкая","priority":"Высокий","hours":1.0,"marker":"Не масштабируем","markerBucket":"negative","owner":"Агентство","what":"Добавлены новые быстрые ссылки, уточнения и объявления, убраны визитки","result":"Прирост CTR на 0,2%","conclusion":"Оставляем в работе.","dates":["2026-06-11"],"hasResult":true,"ganttStatus":"result","displayStatus":"Не масштабируем","displayBucket":"negative"},{"id":12,"name":"Масштабирование оффера Интернет и ТВ","rkRaw":"мастер кампаний","groupRk":"Мастер кампаний","goal":"Повышение количества лидов","effect":"Высокая","priority":"Высокий","hours":1.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Были увеличены недельные бюджеты в мастере кампаний как наиболее эффективном драйвере первичных конверсий и ЦО.","result":"Увеличили объём реализации в размещении на 50%, получили прирост в лидах на 8% и прирост в ЦО на 12%.","conclusion":"Оптимизация поисковых запросов в кампании постепенно снижает стоимость CPL, но из за высоких бюджетов автостратегии  направляют бюджет в более дорогую категорию ключей. Сокращаем бюджет и продолжаем оптимизировать запросы что бы выйти на снижение CPL до 700р.","dates":["2026-06-12"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive"},{"id":13,"name":"Проверить организации в объявлениях на соответствие таргетингу группы ШПД","rkRaw":"ЕПК + Мастер кампаний","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Низкая","priority":"Высокий","hours":2.0,"marker":"Не масштабируем","markerBucket":"negative","owner":"Агентство","what":"Убрали из объявлений нерелевантные организации","result":"Контактная информация в кампаниях ШПД актуализирована. В объявлениях, где не удалось подобрать организацию с контактами - убрали визитки","conclusion":"","dates":["2026-06-17"],"hasResult":true,"ganttStatus":"result","displayStatus":"Не масштабируем","displayBucket":"negative"},{"id":14,"name":"Оптимизация мастера кампанйи Интернет + ТВ","rkRaw":"Мастер кампаний","groupRk":"Мастер кампаний","goal":"Повышение количества лидов","effect":"Высокая","priority":"Высокий","hours":1.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Планируем почистить запросы и площадки в размещении для повышения качества трафика","result":"По результатам анализа выявили просадку в мастер кампаний из увеличение доли категорийного трафика и конкурентов. Была проведена минусация поисковых запросов\nПри масштабировании кампаний столкнулись с подобной проблемой как и на перформанс кампании, что с ростом бюджетов автотаргетинг уводит реализацию в пользу более дорогих запросов. На прошедшей неделе снизили бюджет и провели комплекс работ по чистки трафика от дорогих ключей и площадок. По результатам видим снижение стоимости конверсии с 3000 до 700-800р","conclusion":"Оптимальная реализация в кампании должна оставаться не выше уровня в 30 000, в противном случае трафик и конверсия будет значительно дорожать","dates":["2026-06-18","2026-06-26"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"","columns":["День","Название кампании","Расход, ₽","Клики","Показы","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["Итого","—","477 580,09 ₽","7 322","295 020","2,48","65,23","397","1 202,97 ₽","5,42"],["15.06.2026","b2c | internet_tv | master | all_geo | net","48 176,78 ₽","869","20 783","4,18","55,44","68","708,48 ₽","7,83"],["16.06.2026","b2c | internet_tv | master | all_geo | net","40 173,89 ₽","595","14 396","4,13","67,52","57","704,81 ₽","9,58"],["17.06.2026","b2c | internet_tv | master | all_geo | net","31 314,27 ₽","482","20 517","2,35","64,97","11","2 846,75 ₽","2,28"],["18.06.2026","b2c | internet_tv | master | all_geo | net","36 044,03 ₽","583","26 061","2,24","61,83","9","4 004,89 ₽","1,54"],["19.06.2026","b2c | internet_tv | master | all_geo | net","33 911,35 ₽","499","28 121","1,77","67,96","7","4 844,48 ₽","1,4"],["20.06.2026","b2c | internet_tv | master | all_geo | net","34 342,43 ₽","443","24 708","1,79","77,52","2","17 171,22 ₽","0,45"],["21.06.2026","b2c | internet_tv | master | all_geo | net","32 843,61 ₽","478","30 920","1,55","68,71","11","2 985,78 ₽","2,3"],["22.06.2026","b2c | internet_tv | master | all_geo | net","37 691,78 ₽","622","39 212","1,59","60,6","19","1 983,78 ₽","3,05"],["23.06.2026","b2c | internet_tv | master | all_geo | net","38 877,52 ₽","680","36 443","1,87","57,17","30","1 295,92 ₽","4,41"],["24.06.2026","b2c | internet_tv | master | all_geo | net","30 389,62 ₽","464","12 713","3,65","65,49","47","646,59 ₽","10,13"],["25.06.2026","b2c | internet_tv | master | all_geo | net","31 770,66 ₽","460","10 314","4,46","69,07","37","858,67 ₽","8,04"],["26.06.2026","b2c | internet_tv | master | all_geo | net","32 386 ₽","495","13 391","3,7","65,43","42","771,1 ₽","8,48"],["27.06.2026","b2c | internet_tv | master | all_geo | net","23 930,02 ₽","353","8 590","4,11","67,79","27","886,3 ₽","7,65"],["28.06.2026","b2c | internet_tv | master | all_geo | net","25 728,13 ₽","299","8 851","3,38","86,05","30","857,6 ₽","10,03"]]}],"statsPeriod":""},{"id":15,"name":"Масштабирование объёмов в оффере \"Роутер\"","rkRaw":"ЕПК + Товарные рк","groupRk":"ЕПК","goal":"Увеличение реализации","effect":"Высокая","priority":"Средний","hours":1.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Наращиваем темп реализации в оффере \"Роутеры\" с упором на эффективные товарные кампании. Бюджет поднимаем постепенно, замер темпов и повторные корректировки каждые 4 дня.","result":"17.06 Реализовано бюджета на дату: 27% прогноз на конец месяца 58%. \n26.06 реализоовано 74% бюджета, прогноз реализации вырос до 92%","conclusion":"По итогам месяца плановый бюджет полностью реализован","dates":["2026-06-17","2026-06-26"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive"},{"id":16,"name":"Запуск товарной кампании на WB","rkRaw":"Товарные кампании","groupRk":"Товарные кампании","goal":"Увеличение реализации","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Собираем данные","markerBucket":"neutral","owner":"Агентство","what":"Подготовили кампанию для продвижение роутеров с WB в поисковой выдачи Я.Директа","result":"Запустили кампанию\nЗа период с 29.06 по 07.06 кампния имеет хорошие темп реализации и неплохие показатели кликабельности (CTR 5,9), однако стратегия кампании позволяет оптимизироваться только по вовлечённым сессиям и не даёт данных по конверсиям, поэтому нет возможности оценить эффективность трафика.","conclusion":"По итогам двух недель теста, продаж с кампании нет, поэтому кампанию останавливаем","dates":["2026-06-24","2026-07-07","2026-07-17"],"hasResult":true,"ganttStatus":"result","displayStatus":"Завершено","displayBucket":"positive","statsTables":[{"period":"","columns":["Название кампании","Клики","Показы","Расход, ₽","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["b2c | router_v_kredit | master_new | wildberries | all_geo | net","14 257","241 032","56 781,02","5,91","3,98","973","58,36","6,82"]]}],"statsPeriod":""},{"id":17,"name":"Запуск комбинаторных объявлений крупных гео ШПД (Москва, Санкт-Петербург, Екатеринбург, Пермь, Ростов-на-Дону, Самара)","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Высокая","priority":"Высокий","hours":3.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Запустили комбинаторные объявления в городах Москва, Санкт-Петербург, Екатеринбург, Пермь, Ростов-на-Дону, Самара","result":"Запустил комбинаторные объявления, в ротацию с обычными ТГ, по результатам среза сравним эффективность. \nПо результатам работы объявлений, CTR и CR в комбинаторных объявлениях выше ТГ в 2 раза","conclusion":"Комбинаторные объявления показали сопоставимый CPA с ТГО (732 ₽ против 736 ₽), при этом обеспечили более высокий CTR и практически двукратный рост CR. Продолжаем использовать формат и масштабируем его на остальные категорийные кампании.Комбинаторные объявления работают эффективнее ТГ, планируем дополнять ими все кампании","dates":["2026-06-19","2026-06-26"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период: 15.06.2026 - 28.06.2026","columns":["Тип объявления","Расход, ₽","Клики","Показы","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["Итого","1 047 960,58","17 739","408 671","4,34","59,08","1 427","734,38","8,04"],["Текстово-графическое","624 805,5","13 215","386 594","3,42","47,28","849","735,93","6,42"],["Комбинаторное","423 155,08","4 524","22 077","20,49","93,54","578","732,1","12,78"]]}],"statsPeriod":"Период: 15.06.2026 - 28.06.2026"},{"id":18,"name":"Прислать номера телефонов для городов: Екатеринбург, Казань, Нижний Новгород, Челябинск, Самара, Омск, Ростов-на-Дону, Уфа, Красноярск, Воронеж","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Высокая","priority":"Высокий","hours":0.0,"marker":"Готово","markerBucket":"positive","owner":"Клиент","what":"Берём на тест номер СПБ и добавляем во все гео","result":"","conclusion":"26.06 делаем первый срез по статистике и оцениваем эффективность","dates":["2026-06-18"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive"},{"id":19,"name":"Расширение кампаний с номером телефона","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Высокая","priority":"Высокий","hours":3.0,"marker":"Собираем данные","markerBucket":"neutral","owner":"Агентство","what":"Добавить в текущие брендовые кампании ШПД семантику с номером телефона и объявления с номером, города на тест (Екатеринбург, Казань, Нижний Новгород, Челябинск, Самара, Омск, Ростов-на-Дону, Уфа, Красноярск, Воронеж)","result":"По результатам теста, за период с 04 по 08 июля, объявления с номерами телефонов имеют более низкие показатели по сравнению с обычными заголовками без номеров. Кликабельность хуже на 18%, конверсия дороже на 9% и низкие объёмы трафика (всего 7% от суммы по всем объявлениям).","conclusion":"Оставляем в работе только одну группу с семантикой и объявлениями по номерам. Из общих групп объявления с номером убираем.","dates":["2026-06-19","2026-07-09"],"hasResult":true,"ganttStatus":"result","displayStatus":"Завершено","displayBucket":"positive","statsTables":[{"period":"","columns":["объявление","Название группы","Показы","Клики","Расход, ₽","Конверсии","CTR","CPC","CPL","CR"],"rows":[["без номера","Высокий CPC","1 227","548","48 115 ₽","70","44,66%","88 ₽","687 ₽","13%"],["без номера","Высокий CPL","525","224","15 727 ₽","28","42,67%","70 ₽","562 ₽","13%"],["без номера","Дом ру (общая)","1 758","623","49 729 ₽","66","35,44%","80 ₽","753 ₽","11%"],["без номера","Дом ру домашний интернет","349","163","8 824 ₽","24","46,7%","54 ₽","368 ₽","15%"],["без номера","дом ру интернет в квартиру","408","217","10 604 ₽","30","53,19%","49 ₽","353 ₽","14%"],["без номера","дом ру подключение","627","276","18 886 ₽","42","44,02%","68 ₽","450 ₽","15%"],["без номера","дом ру провайдер","619","261","24 064 ₽","41","42,16%","92 ₽","587 ₽","16%"],["без номера","дом ру сайт","480","199","14 917 ₽","25","41,46%","75 ₽","597 ₽","13%"],["без номера","дом ру стоимость","307","142","9 444 ₽","14","46,25%","67 ₽","675 ₽","10%"],["без номера","дом ру тарифы","463","208","13 929 ₽","24","44,92%","67 ₽","580 ₽","12%"],["без номера","Купленный актив","565","80","12 878 ₽","16","14,16%","161 ₽","805 ₽","20%"],["без номера","эр телеком","720","186","14 432 ₽","28","25,83%","78 ₽","515 ₽","15%"],["без номера Итог","—","8 048","3 127","241 548 ₽","408","38,85%","77 ₽","592","13%"],["с номером","бренд+номер","516","124","18 809 ₽","29","24,03%","152 ₽","649 ₽","23%"],["с номером","Высокий CPC","89","27","3 573 ₽","4","30,34%","132 ₽","893 ₽","15%"],["с номером","Высокий CPL","2","2","115 ₽","0","100%","58 ₽","0 ₽","0%"],["с номером","Дом ру (общая)","244","27","2 557 ₽","2","11,07%","95 ₽","1 279 ₽","7%"],["с номером","Дом ру домашний интернет","17","3","604 ₽","0","17,65%","201 ₽","0 ₽","0%"],["с номером","дом ру интернет в квартиру","28","8","296 ₽","3","28,57%","37 ₽","99 ₽","38%"],["с номером","дом ру подключение","29","6","883 ₽","2","20,69%","147 ₽","442 ₽","33%"],["с номером","дом ру провайдер","15","1","14 ₽","0","6,67%","14 ₽","0 ₽","0%"],["с номером","дом ру сайт","23","1","25 ₽","0","4,35%","25 ₽","0 ₽","0%"],["с номером","дом ру стоимость","26","6","418 ₽","1","23,08%","70 ₽","418 ₽","17%"],["с номером","дом ру тарифы","29","6","396 ₽","0","20,69%","66 ₽","0 ₽","0%"],["с номером","Купленный актив","31","7","1 685 ₽","4","22,58%","241 ₽","421 ₽","57%"],["с номером","эр телеком","70","6","775 ₽","0","8,57%","129 ₽","0 ₽","0%"],["с номером Итог","—","1 119","224","30 150 ₽","45","20,02%","135 ₽","670","20%"]]}],"statsPeriod":""},{"id":21,"name":"Остановка неэффективных кампаний ремаркетинга","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Средняя","priority":"Высокий","hours":0.5,"marker":"Не масштабируем","markerBucket":"negative","owner":"Агентство","what":"Остановили кампании поискового ремаркетинга из низкой эффективности","result":"с 1 по 14 июня получили 0 ЦО по кампаниям ремаркетинга, CPL первичных конверсий 2 500р","conclusion":"Кампании остановлены из за низкой эффективности","dates":["2026-06-18"],"hasResult":true,"ganttStatus":"result","displayStatus":"Не масштабируем","displayBucket":"negative"},{"id":22,"name":"Продвижение тарифов через товарный фид позволит показывать пользователям наиболее релевантные тарифные предложения в зависимости от запроса и повысить конверсионность трафика.","rkRaw":"Товарные рк","groupRk":"Товарные кампании","goal":"Повышение количества лидов","effect":"Средняя","priority":"Высокий","hours":5.0,"marker":"Собираем данные","markerBucket":"neutral","owner":"Агентство","what":"Создали карточки товаров с тарифами для городов Москва, Санкт-Петербург, Екатеринбург, Пермь. Стоимость. Добавили в текущие кампании товарные объявления и расширили площадку показов до товарной галереи","result":"Создали товарные объявления в ротации с обычными ТГ на поисковых категорийных кампаниях \n\nС 27.06 по 07.07 объёмы трафика и реализация по товарным объявлениям относительно других типов небольшие: расход 42 579р., клики 168.  При этом стоимость конверсий выше почти в 3 раза по сравнению с Текстово-графическими объявлениями.","conclusion":"Рекомендуем протестировать формат так же на брендовых кампаниях","dates":["2026-06-26","2026-07-07","2026-07-17"],"hasResult":true,"ganttStatus":"result","displayStatus":"Завершено","displayBucket":"positive","statsTables":[{"period":"","columns":["Тип объявления","Расход, ₽","Клики","Показы","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["Комбинаторное","5 088 108 ₽","114 296","9 252 420","1,24","44,52","5 413","939,98","4,74"],["Текстово-графическое","3 011 919 ₽","28 741","205 075","14,01","104,8","3 418","881,19","11,89"],["Товарное","42 579 ₽","168","1 991","8,44","253,44","18","2 365,48","10,71"]]}],"statsPeriod":""},{"id":23,"name":"Тест новой посадочной, на товарной кампании по офферу Роутер. Новая посадочная имеет преимущества в юзабилити и ассортименте, поэтому потенциально более конверсионная","rkRaw":"Товарные рк","groupRk":"Товарные кампании","goal":"Повышение количества лидов","effect":"Средняя","priority":"Высокий","hours":2.0,"marker":"Собираем данные","markerBucket":"neutral","owner":"Агентство","what":"Сменили посадочную в товарной кампании \"Роутеры\": на основе новой посадочной https://dom.ru/internet/equipment сделали фид который будет вести на карточку товаров, запустили по этому фиду кампанию с размещением в тоарной галереи","result":"1) Собран фид с товарами. Запущена товарная кампания по продвижению роутеров в товарной галерее\n\n2) За период с 26.06 по 07.07 кампания привела 7 конверсий по цене 10 842р. Нужна дополнительная статистика по продажам для полной оценке результата, если показатели аналогичные, то кампанию останавливаем.","conclusion":"По итогам двух недель теста CPL в кампании составил 5 399р., что выше плана в 2,5 раза, так же в кампании нет переходов на E-com площадки и продаж, поэтому было принято решение кампанию приостановить, а бюджет распределить на более эффективные типы кампаний","dates":["2026-06-25","2026-07-07","2026-07-14"],"hasResult":true,"ganttStatus":"result","displayStatus":"Завершено","displayBucket":"positive","statsTables":[{"period":"","columns":["Название кампании","№ Кампании","Клики","Показы","Расход, ₽","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["b2c|router_v_kredit|general_new|all_geo|net","710 282 483","21 619","3 465 102","484 858,11","0,62","22,43","182","2 664,06","0,84"],["b2c|router_v_kredit|brand_new|all_geo|search","710 282 471","364","2 010","38 820,9","18,11","106,65","21","1 848,61","5,77"],["b2c|router_v_kredit|general_new|all_geo|search","700 116 931","1 288","53 012","101 060,81","2,43","78,46","20","5 053,04","1,55"],["b2c | router_v_kredit | tovarnay | all_geo | search","700 529 553","647","70 927","75 896,12","0,91","117,3","7","10 842,3","1,08"],["b2c | router_v_kredit | master_new | market | all_geo | net","705 403 463","3 109","360 260","63 320,74","0,86","20,37","0","—","0"],["b2c | router_v_kredit | master_new | ozon | all_geo | net","705 408 992","1 610","138 334","12 602,65","1,16","7,83","0","—","0"],["b2c | router_v_kredit | master_new | wildberries | all_geo | net","711 710 221","14 257","241 032","56 781,02","5,91","3,98","0","—","0"]]},{"period":"","columns":["Неделя","Название кампании","№ Кампании","Клики","Показы","Расход, ₽","CTR, %","CPC, ₽","Конверсии на сайте","CPA, ₽","CR, %","Переходы на Е-ком площадки","Продажи на Е-ком площадках"],"rows":[["Итого","—","—","723","105 185","64 798,11","0,69","89,62","12","5 399,84","1,66","0","0"],["29.06.2026 - 05.07.2026","b2c | router_v_kredit | tovarnay | all_geo | search","700 529 553","280","33 079","23 100,98","0,85","82,5","6","3 850,16","2,14","0","0"],["06.07.2026 - 12.07.2026","b2c | router_v_kredit | tovarnay | all_geo | search","700 529 553","443","72 106","41 697,13","0,61","94,12","6","6 949,52","1,35","0","0"]]}],"statsPeriod":""},{"id":25,"name":"Анализ просадки в оффере Танки и каробли\"","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Высокий","hours":3.0,"marker":"Собираем данные","markerBucket":"neutral","owner":"Агентство","what":"Проверили поисковые запросы по кампании и исключили нецелевой трафик, который расходовал бюджет без конверсий или приводил к высокому CPL. В минус-слова добавили запросы по конкурентам, другим играм, скачиванию/установке игры, аккаунтам, промокодам, читам, гайдам и информационным формулировкам. При этом сохранили целевые запросы, связанные с тарифом для геймеров и аудиторией «Мир танков», чтобы не ограничить потенциально конверсионный спрос. Дополнительно почистили площадки в РСЯ и перезапустили обучение в поисковой автостратегии","result":"По результатам тестого периода CPL в РСЯ снизился на 10% (до 490р), поисковая кампания осталась на прежнем уровне CPL 2 900","conclusion":"Для оптимизации расходов и CPL, тестово приостановили поисковое размещение и пересплитовали бюджет в РСЯ, что бы снизить долю поиска и сократить просадку. \n\nПосле отключения поискового трафика в оффере CPL снизился на 84%, стоимость целевого обращения упала с 16 532р. до 1 195р., Пробуем масштабировать сетевую кампанию за счёт доп бюджета с оффера MAX","dates":["2026-06-26","2026-07-07","2026-07-14"],"hasResult":true,"ganttStatus":"result","displayStatus":"Завершено","displayBucket":"positive"},{"id":26,"name":"Анализ трафика по времени суток и дням недели. Выявить наиболее конверсионные часы и дня недели, для последующих корректировок (ШПД)","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Высокий","hours":2.0,"marker":"Внедряем","markerBucket":"positive","owner":"Агентство","what":"Собрали анализ и выявили закономерности для усиления","result":"Будем внедрять усиление и ценивать результаты в рамках июля","conclusion":"Усилить дневные будние окна\nПонедельник 09:00-15:00, среда 10:00-16:00, четверг 09:00-14:00, точечно вторник 13:00-15:00 и пятница 14:00-16:00.","dates":["2026-06-30"],"hasResult":true,"ganttStatus":"result","displayStatus":"Внедряем","displayBucket":"positive"},{"id":27,"name":"Проанализировать позиции показа в бренде, понять на каких позициях какая онверсия и CPC (возможно есть корреляция с временем показа, например имеет смысл настроить повышающие корректировки на пиковые часы что бы удерживать позицию ). Дать реко по оптимизации (ШПД)","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Высокий","hours":3.0,"marker":"Внедряем","markerBucket":"positive","owner":"Агентство","what":"Собрали анализ и выявили напрпавления для усиления показов в спецразмещении","result":"Будем внедрять усиление и ценивать результаты в рамках июля","conclusion":"Для perfomance | all_geo | search поставить +10-15% на спецразмещение 1-4. Бренд, категорию и конкурентов оставить без повышения: по ним подтягивание ведет в более дорогие или недостаточно подтвержденные позиции.","dates":["2026-06-30"],"hasResult":true,"ganttStatus":"result","displayStatus":"Внедряем","displayBucket":"positive"},{"id":28,"name":"Перегруппировать запросы в бренде и написать объявления с вхождением в запрос (ШПД)","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Высокий","hours":3.0,"marker":"приостановлена","markerBucket":"negative","owner":"Агентство","what":"Выявили наиболее результативные заголовки и тексты, подготовили 3 комбиноторных объявления, внедряем в рк","result":"в работе","conclusion":"","dates":["2026-07-01","2026-07-16"],"hasResult":false,"ganttStatus":"progress","displayStatus":"приостановлена","displayBucket":"negative"},{"id":29,"name":"Внедрены повышающие корректировки \nна android с -70 до -40\nГорода: Питер, Нижний, Самара, Омск, Томск (бренд поиск)","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Собираем данные","markerBucket":"neutral","owner":"Агентство","what":"Снялми все корректировки 03.07","result":"После снятия корректировки Android дал +72% кликов и +95% конверсий. CPA снизился на 14%, CR вырос с 16,0% до 18,0%. В целом конверсии выросли на 31%, CPA снизился на 16%.","conclusion":"Android обеспечил 83% прироста конверсий и 96% прироста кликов, при этом эффективность улучшилась: CPA снизился, а CR вырос. Снятие понижающей корректировки дало положительный результат.","dates":["2026-07-13","2026-07-28"],"hasResult":true,"ganttStatus":"result","displayStatus":"Завершено","displayBucket":"positive","statsTables":[{"period":"Период 1: 15.06.2026 - 28.06.2026 · Период 2: 06.07.2026 - 19.07.2026","columns":["Тип операционной системы","Клики / Период 1","Клики / Период 2","Клики / Разница %","Клики / Разница","Расход / Период 1, ₽","Расход / Период 2, ₽","Расход / Разница %","Расход / Разница","CPC / Период 1, ₽","CPC / Период 2, ₽","CPC / Разница %","CPC / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница","CR / Период 1, %","CR / Период 2, %","CR / Разница %","CR / Разница"],"rows":[["Итого","6 915","8 139","17,7","1 224","501 555,19","555 498,43","10,76","53 943,24","72,53","68,25","−5,9","−4,28","948","1 243","31,12","295","529,07","446,9","−15,53","−82,17","13,71","15,27","11,38","1,56"],["iOS","3 341","3 296","−1,35","−45","234 755,88","198 660,23","−15,38","−36 095,65","70,27","60,27","−14,23","−10","437","483","10,53","46","537,2","411,3","−23,44","−125,9","13,08","14,65","12","1,57"],["Android","1 628","2 807","72,42","1 179","153 216,71","256 612,29","67,48","103 395,58","94,11","91,42","−2,86","−2,69","260","506","94,62","246","589,3","507,14","−13,94","−82,16","15,97","18,03","12,9","2,06"],["Не определён","1 946","2 036","4,62","90","113 582,61","100 225,9","−11,76","−13 356,71","58,37","49,23","−15,66","−9,14","251","254","1,2","3","452,52","394,59","−12,8","−57,93","12,9","12,48","−3,26","−0,42"],["Другие","0","0","0","0","0","0","0","0","—","—","—","—","0","0","0","0","—","—","—","—","—","—","—","—"]]}],"statsPeriod":"Период 1: 15.06.2026 - 28.06.2026 · Период 2: 06.07.2026 - 19.07.2026"},{"id":30,"name":"Усилить дневные будние окна\nПонедельник 09:00-15:00, среда 10:00-16:00, четверг 09:00-14:00, точечно вторник 13:00-15:00 и пятница 14:00-16:00. (ШПД)","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Низкая","priority":"Средний","hours":2.0,"marker":"приостановлена","markerBucket":"negative","owner":"Агентство","what":"","result":"","conclusion":"","dates":[],"hasResult":false,"ganttStatus":"no_data","displayStatus":"приостановлена","displayBucket":"negative"},{"id":31,"name":"Для perfomance | all_geo | search поставить +10-15% на спецразмещение 1-4. Бренд, категорию и конкурентов оставить без повышения: по ним подтягивание ведет в более дорогие или недостаточно подтвержденные позиции.","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Низкая","priority":"Средний","hours":2.0,"marker":"Внедрили","markerBucket":"positive","owner":"Агентство","what":"Настроили повышающую корректировку +15 на эксклюзивное размещениея","result":"После корректировки +15% эксклюзивное размещение дало +104% кликов и +142% конверсий. CPC снизился на 24%, CPA — на 36%, CR вырос с 10,8% до 12,8%.","conclusion":"Корректировка усилила выкуп эксклюзивной позиции: трафика и конверсий стало больше, а эффективность выросла. Формат стал одним из драйверов снижения общего CPC и CPA, поэтому настройку целесообразно сохранить.","dates":["2026-07-13","2026-07-28"],"hasResult":true,"ganttStatus":"result","displayStatus":"Внедрили","displayBucket":"positive","statsTables":[{"period":"Период 1: 15.06.2026 - 28.06.2026 · Период 2: 13.07.2026 - 26.07.2026","columns":["Название кампании","№ Кампании","Вид размещения","Клики / Период 1","Клики / Период 2","Клики / Разница %","Клики / Разница","Расход / Период 1, ₽","Расход / Период 2, ₽","Расход / Разница %","Расход / Разница","CTR / Период 1, %","CTR / Период 2, %","CTR / Разница %","CTR / Разница","CPC / Период 1, ₽","CPC / Период 2, ₽","CPC / Разница %","CPC / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница","CR / Период 1, %","CR / Период 2, %","CR / Разница %","CR / Разница"],"rows":[["Итого","—","—","13 978","11 483","−17,85","−2 495","1 736 198,6","659 444,76","−62,02","−1 076 753,84","15,14","16,01","5,75","0,87","124,21","57,43","−53,76","−66,78","1 786","1 498","−16,13","−288","972,12","440,22","−54,72","−531,9","12,78","13,05","2,11","0,27"],["b2c | 1rub | perfomance | all_geo | search","106 451 914","Спецразмещение","10 255","5 310","−48,22","−4 945","1 524 291,46","491 994,38","−67,72","−1 032 297,08","22,83","19,34","−15,29","−3,49","148,64","92,65","−37,67","−55,99","1 414","747","−47,17","−667","1 078","658,63","−38,9","−419,37","13,79","14,07","2,03","0,28"],["b2c | 1rub | perfomance | all_geo | search","106 451 914","Эксклюзивное размещение","2 478","5 044","103,55","2 566","56 569,43","87 407,9","54,51","30 838,47","35,37","41,95","18,6","6,58","22,83","17,33","−24,09","−5,5","267","645","141,57","378","211,87","135,52","−36,04","−76,35","10,77","12,79","18,76","2,02"],["b2c | 1rub | perfomance | all_geo | search","106 451 914","Прочее","989","774","−21,74","−215","100 156,67","39 344,7","−60,72","−60 811,97","2,85","2,9","1,75","0,05","101,27","50,83","−49,81","−50,44","68","59","−13,24","−9","1 472,89","666,86","−54,72","−806,03","6,88","7,62","10,76","0,74"],["b2c | 1rub | perfomance | all_geo | search","106 451 914","Реклама в саджесте","256","355","38,67","99","55 181,04","40 697,78","−26,25","−14 483,26","4,5","6,43","42,89","1,93","215,55","114,64","−46,82","−100,91","37","47","27,03","10","1 491,38","865,91","−41,94","−625,47","14,45","13,24","−8,37","−1,21"],["b2c | 1rub | perfomance | all_geo | search","106 451 914","Товарная галерея","0","0","0","0","0","0","0","0","0","0","0","0","—","—","—","—","0","0","0","0","—","—","—","—","—","—","—","—"]]}],"statsPeriod":"Период 1: 15.06.2026 - 28.06.2026 · Период 2: 13.07.2026 - 26.07.2026"},{"id":32,"name":"Обновлены быстрые ссылки\nКампания: Иркутск бренд поиск","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Внедрили","markerBucket":"positive","owner":"Агентство","what":"Заменили быстрые ссылки во всех объявлениях","result":"Кликабельность быстрых ссылок выросла в 5 раз, CPL снизился с 800р до 350р","conclusion":"Новые быстрые ссылки имеют большую релевантность и интерес у аудитории, масштабируем на остальные рекламные кампании.","dates":["2026-07-13"],"hasResult":true,"ganttStatus":"result","displayStatus":"Внедрили","displayBucket":"positive","statsTables":[{"period":"Период 1: 01.06.2026 - 12.06.2026 · Период 2: 01.07.2026 - 12.07.2026","columns":["Название кампании","№ Кампании","Место клика","Клики / Период 1","Клики / Период 2","Клики / Разница %","Клики / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница","CR / Период 1, %","CR / Период 2, %","CR / Разница %","CR / Разница"],"rows":[["Итого","—","—","4","21","425","17","1","6","500","5","796,25","349,2","−56,14","−447,05","25","28,57","14,28","3,57"],["b2c | 1rub | brand | Irkutsk | search","105 221 483","Быстрая ссылка №5","0","1","—","1","0","0","0","0","—","—","—","—","—","0","—","—"],["b2c | 1rub | brand | Irkutsk | search","105 221 483","Быстрая ссылка №4","1","5","400","4","0","0","0","0","—","—","—","—","0","0","0","0"],["b2c | 1rub | brand | Irkutsk | search","105 221 483","Быстрая ссылка №3","0","6","—","6","0","2","—","2","—","363,7","—","—","—","33,33","—","—"],["b2c | 1rub | brand | Irkutsk | search","105 221 483","Быстрая ссылка №2","3","7","133,33","4","1","1","0","0","641,46","642,33","0,14","0,87","33,33","14,29","−57,13","−19,04"],["b2c | 1rub | brand | Irkutsk | search","105 221 483","Быстрая ссылка №1","0","2","—","2","0","3","—","3","—","33,85","—","—","—","150","—","—"]]}],"statsPeriod":"Период 1: 01.06.2026 - 12.06.2026 · Период 2: 01.07.2026 - 12.07.2026"},{"id":33,"name":"Повышающая корректировка \nна \"Эксклюзив. спецразмещение\" на 20%\nКампания: Нижний Новгород бренд поиск","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Внедрили","markerBucket":"positive","owner":"Агентство","what":"Настроили повышающую корректировку +20 на эксклюзивное размещениея","result":"После положительной динамики в промежуточном срезе отказались от снижения корректировки и сохранили её на уровне +20%. Итоговые результаты подтвердили решение: клики выросли на 147%, конверсии — на 369%, CR увеличился с 7,6% до 14,5%, а CPA снизился на 50% при стабильном CPC.","conclusion":"Корректировка значительно увеличила выкуп эксклюзивной позиции и привела более конверсионный трафик. Настройки целесообразно сохранить.","dates":["2026-07-13","2026-07-28"],"hasResult":true,"ganttStatus":"result","displayStatus":"Внедрили","displayBucket":"positive","statsTables":[{"period":"Период 1: 15.06.2026 - 28.06.2026 · Период 2: 13.07.2026 - 26.07.2026","columns":["Название кампании","№ Кампании","Вид размещения","Клики / Период 1","Клики / Период 2","Клики / Разница %","Клики / Разница","Расход / Период 1, ₽","Расход / Период 2, ₽","Расход / Разница %","Расход / Разница","CTR / Период 1, %","CTR / Период 2, %","CTR / Разница %","CTR / Разница","CPC / Период 1, ₽","CPC / Период 2, ₽","CPC / Разница %","CPC / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница","CR / Период 1, %","CR / Период 2, %","CR / Разница %","CR / Разница"],"rows":[["Итого","—","—","1 521 ₽","2 384 ₽","56,74","863","128 520,28","146 549,64","14,03","18 029,36","34,6","35,8","3,47","1,2","84,5","61,47","−27,25","−23,03","171","381","122,81","210","751,58","384,64","−48,82","−366,94","11,24","15,98","42,17","4,74"],["b2c | 1rub | brand | n_novgorod | search","105 221 287","Спецразмещение","843 ₽","676 ₽","−19,81","−167","89 219,13","58 502,59","−34,43","−30 716,54","43,23","43,81","1,34","0,58","105,84","86,54","−18,24","−19,3","117","129","10,26","12","762,56","453,51","−40,53","−309,05","13,88","19,08","37,46","5,2"],["b2c | 1rub | brand | n_novgorod | search","105 221 287","Эксклюзивное размещение","589 ₽","1 457 ₽","147,37","868","21 888,79","51 520,11","135,37","29 631,32","38,02","44,79","17,81","6,77","37,16","35,36","−4,84","−1,8","45","211","368,89","166","486,42","244,17","−49,8","−242,25","7,64","14,48","89,53","6,84"],["b2c | 1rub | brand | n_novgorod | search","105 221 287","Реклама в саджесте","65 ₽","207 ₽","218,46","142","15 374,12","34 778,09","126,21","19 403,97","32,99","25,43","−22,92","−7,56","236,52","168,01","−28,97","−68,51","8","39","387,5","31","1 921,77","891,75","−53,6","−1 030,02","12,31","18,84","53,05","6,53"],["b2c | 1rub | brand | n_novgorod | search","105 221 287","Прочее","24 ₽","44 ₽","83,33","20","2 038,24","1 748,85","−14,2","−289,39","3,43","4,19","22,16","0,76","84,93","39,75","−53,2","−45,18","1","2","100","1","2 038,24","874,42","−57,1","−1 163,82","4,17","4,55","9,11","0,38"]]}],"statsPeriod":"Период 1: 15.06.2026 - 28.06.2026 · Период 2: 13.07.2026 - 26.07.2026"},{"id":34,"name":"Обновлены быстрые ссылки\nГорода: Ижевск, Казань, Оренбург, Пенза, Саратов (бренд поиск)","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Внедрили","markerBucket":"positive","owner":"Агентство","what":"Заменили быстрые ссылки во всех объявлениях","result":"Кликабельность быстрых ссылок выросла в 4 раз, CPL снизился с 1100р до 640р","conclusion":"Новые быстрые ссылки имеют большую релевантность и интерес у аудитории, масштабируем на остальные рекламные кампании.","dates":["2026-07-13"],"hasResult":true,"ganttStatus":"result","displayStatus":"Внедрили","displayBucket":"positive","statsTables":[{"period":"Период 1: 08.06.2026 - 14.06.2026 · Период 2: 06.07.2026 - 12.07.2026","columns":["Место клика","Расход / Период 1, ₽","Расход / Период 2, ₽","Расход / Разница %","Расход / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница","CR / Период 1, %","CR / Период 2, %","CR / Разница %","CR / Разница"],"rows":[["Итого","2 188,39","8 973,14","310,03","6 784,75","2","14","600","12","1 094,19","640,94","−41,42","−453,25","6,25","20","220","13,75"],["Быстрая ссылка №1","142,11","3 472,03","2 343,2","3 329,92","0","5","—","5","—","694,41","—","—","0","22,73","—","22,73"],["Быстрая ссылка №2","1 230,56","2 571,09","108,94","1 340,53","1","5","400","4","1 230,56","514,22","−58,21","−716,34","7,69","20","160,08","12,31"],["Быстрая ссылка №3","40,04","2 865,5","7 056,59","2 825,46","0","4","—","4","—","716,37","—","—","0","18,18","—","18,18"],["Быстрая ссылка №4","656,89","64,53","−90,18","−592,36","1","0","−100","−1","656,89","—","—","—","10","0","−100","−10"],["Быстрая ссылка №5","3,65","0","−100","−3,65","0","0","0","0","—","—","—","—","0","—","—","—"],["Быстрая ссылка №8","115,14","0","−100","−115,14","0","0","0","0","—","—","—","—","0","—","—","—"]]}],"statsPeriod":"Период 1: 08.06.2026 - 14.06.2026 · Период 2: 06.07.2026 - 12.07.2026"},{"id":35,"name":"Интернет + ТВ - проанализировать, что дало хороший результат","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"См. гипотезу 14","result":"","conclusion":"","dates":["2026-07-13"],"hasResult":false,"ganttStatus":"progress","displayStatus":"Готово","displayBucket":"positive"},{"id":36,"name":"Взять из квартальной аналитики Яндекса списки неохваченных запросов, расширить ими семантику в кампаниях","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"приостановлена","markerBucket":"negative","owner":"Агентство","what":"Проанализировали файлы от яндекса, выделили пул запросов для рассмотрения по каждому направлению. Далее сравним с текущей семантикой и определим недостающие варианты","result":"Собрали списки неохваченной брендовой семантики","conclusion":"За прошедшую неделю видим улучшение показателей в брендовых рк, поэтому расширение кампаний временно приостановлено","dates":["2026-07-15"],"hasResult":true,"ganttStatus":"result","displayStatus":"приостановлена","displayBucket":"negative"},{"id":37,"name":"Тест мастера кампаний по брендовой семантике","rkRaw":"Мастер кампаний","groupRk":"Мастер кампаний","goal":"Повышение количества лидов","effect":"Высокая","priority":"Средний","hours":1.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Запустили в оффере \"Ринет\" мастер кампаний по брендовым ключевым словам","result":"Брендовый МК дал на 84% больше кликов и на 30% больше конверсий при CPC ниже на 27%. Однако CR составил 4,05% против 5,74%, а CPA оказался на 3% выше — 662 ₽ против 641 ₽.","conclusion":"Отдельный брендовый МК увеличивает объём трафика, но не показывает преимущества по эффективности: общий МК даёт более высокий CR и немного более низкий CPA.","dates":["2026-07-14","2026-07-21","2026-07-27"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период: 15.07.2026 - 26.07.2026","columns":["Название кампании","№ Кампании","Клики","Показы","Расход, ₽","CTR, %","CPC, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["Итого","—","3 163","22 159","95 974,71","14,27","30,34","147","652,89","4,65"],["b2c | rinet | master-kampanii | brand | net","712 788 189","2 048","12 699","54 950,24","16,13","26,83","83","662,05","4,05"],["b2c | rinet | master-kampanii | net","104 982 427","1 115","9 460","41 024,48","11,79","36,79","64","641,01","5,74"]]}],"statsPeriod":"Период: 15.07.2026 - 26.07.2026"},{"id":38,"name":"Добавить обновлённые БС во все мастера кампаний ШПД","rkRaw":"Мастер кампаний","groupRk":"Мастер кампаний","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":3.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Обновили Быстрые ссылки во всех мастерах кампаний","result":"После обновления быстрых ссылок конверсии выросли на 52%, CPA снизился на 17%. Клики прибавили 17%, при этом CPC вырос на 8%.","conclusion":"Обновление быстрых ссылок в целом положительно повлияло на эффективность кампаний: конверсионность трафика выросла, а CPA снизился на 17%. Основной вклад в улучшение результата дали ссылки №1 и №3.","dates":["2026-07-17","2026-07-27"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период 1: 18.06.2026 - 28.06.2026 · Период 2: 16.07.2026 - 26.07.2026","columns":["Место клика","Расход / Период 1, ₽","Расход / Период 2, ₽","Расход / Разница %","Расход / Разница","Клики / Период 1","Клики / Период 2","Клики / Разница %","Клики / Разница","CPC / Период 1, ₽","CPC / Период 2, ₽","CPC / Разница %","CPC / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница"],"rows":[["Итого","163 821,94","205 535,8","25,46","41 713,86","1 191","1 388","16,54","197","137,55","148,08","7,66","10,53","126","191","51,59","65","1 300,17","1 076,1","−17,23","−224,07"],["Быстрая ссылка №1","36 457,2","59 771,55","63,95","23 314,35","334","424","26,95","90","109,15","140,97","29,15","31,82","19","81","326,32","62","1 918,8","737,92","−61,54","−1 180,88"],["Быстрая ссылка №2","44 740,97","49 343,07","10,29","4 602,1","355","405","14,08","50","126,03","121,83","−3,33","−4,2","29","23","−20,69","−6","1 542,79","2 145,35","39,06","602,56"],["Быстрая ссылка №3","37 183,1","75 549,77","103,18","38 366,67","217","427","96,77","210","171,35","176,93","3,26","5,58","32","72","125","40","1 161,97","1 049,3","−9,7","−112,67"],["Быстрая ссылка №4","42 037,62","18 445,99","−56,12","−23 591,63","251","124","−50,6","−127","167,48","148,76","−11,18","−18,72","35","15","−57,14","−20","1 201,07","1 229,73","2,39","28,66"],["Быстрая ссылка №5","418,93","1 579,06","276,93","1 160,13","1","7","600","6","418,93","225,58","−46,15","−193,35","0","0","0","0","—","—","—","—"],["Быстрая ссылка №6","944,82","0","−100","−944,82","12","0","−100","−12","78,74","—","—","—","0","0","0","0","—","—","—","—"],["Быстрая ссылка №7","72,52","846,35","1 067,06","773,83","2","1","−50","−1","36,26","846,35","2 234,11","810,09","1","0","−100","−1","72,52","—","—","—"],["Быстрая ссылка №8","1 966,77","0","−100","−1 966,77","19","0","−100","−19","103,51","—","—","—","10","0","−100","−10","196,68","—","—","—"]]}],"statsPeriod":"Период 1: 18.06.2026 - 28.06.2026 · Период 2: 16.07.2026 - 26.07.2026"},{"id":39,"name":"Поменять местами 4 и 8 БС во всех брендовых кампаниях ШПД","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Скорректировали порядок быстрых ссылок в размещении","result":"После перестановки БС №4 получила 55 кликов и 12 конверсий, а БС №8 — ни одного клика. Общий CPC снизился на 48%, CPA — на 55%.","conclusion":"Перенос информации из БС №8 в БС №4 дал положительный результат: обновлённая ссылка №4 стала получать больше трафика и конверсий. БС №8 и ранее занимала минимальную долю трафика, поэтому её показатели практически не изменились.","dates":["2026-07-21","2026-07-28"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период 1: 15.07.2026 - 19.07.2026 · Период 2: 22.07.2026 - 26.07.2026","columns":["Место клика","Расход / Период 1, ₽","Расход / Период 2, ₽","Расход / Разница %","Расход / Разница","Клики / Период 1","Клики / Период 2","Клики / Разница %","Клики / Разница","CPC / Период 1, ₽","CPC / Период 2, ₽","CPC / Разница %","CPC / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница"],"rows":[["Итого","1 473,32","2 650,55","79,9","1 177,23","16","55","243,75","39","92,08","48,19","−47,67","−43,89","3","12","300","9","491,11","220,88","−55,02","−270,23"],["Быстрая ссылка №4","1 283,4","2 650,55","106,53","1 367,15","13","55","323,08","42","98,72","48,19","−51,19","−50,53","3","12","300","9","427,8","220,88","−48,37","−206,92"],["Быстрая ссылка №8","189,93","0","−100","−189,93","3","0","−100","−3","63,31","—","—","—","0","0","0","0","—","—","—","—"]]}],"statsPeriod":"Период 1: 15.07.2026 - 19.07.2026 · Период 2: 22.07.2026 - 26.07.2026"},{"id":40,"name":"Добавить во все ЕПК в ШПД новые комбинаторные объявления","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Добавили во все кампании ЕПК дополнительные комбинаторные объявления","result":"После добавления объявлений комбинаторный формат дал +90% кликов и +81% конверсий. CPC снизился на 13%, CPA — на 9%, доля конверсий выросла с 43% до 85%.","conclusion":"Дополнительные комбинаторные объявления успешно забрали большую часть трафика и повысили эффективность формата. Общий объём конверсий снизился на 8% из-за снижения реализации на выходных днях","dates":["2026-07-24","2026-07-28"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период 1: 17.07.2026 - 20.07.2026 · Период 2: 24.07.2026 - 27.07.2026","columns":["Тип объявления","Расход / Период 1, ₽","Расход / Период 2, ₽","Расход / Разница %","Расход / Разница","Клики / Период 1","Клики / Период 2","Клики / Разница %","Клики / Разница","CTR / Период 1, %","CTR / Период 2, %","CTR / Разница %","CTR / Разница","CPC / Период 1, ₽","CPC / Период 2, ₽","CPC / Разница %","CPC / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница"],"rows":[["Итого","510 770,55","464 500,12","−9,06","−46 270,43","11 361","10 462","−7,91","−899","37,31","36,9","−1,1","−0,41","44,96","44,4","−1,25","−0,56","1 716","1 582","−7,81","−134","297,65","293,62","−1,35","−4,03"],["Текстово-графическое","311 519,9","137 337,47","−55,91","−174 182,43","6 734","1 679","−75,07","−5 055","38,51","31,28","−18,77","−7,23","46,26","81,8","76,83","35,54","976","242","−75,2","−734","319,18","567,51","77,8","248,33"],["Комбинаторное","199 250,65","327 162,65","64,2","127 912","4 627","8 783","89,82","4 156","35,7","38,21","7,03","2,51","43,06","37,25","−13,49","−5,81","740","1 340","81,08","600","269,26","244,15","−9,33","−25,11"]]}],"statsPeriod":"Период 1: 17.07.2026 - 20.07.2026 · Период 2: 24.07.2026 - 27.07.2026"},{"id":41,"name":"Сократить неэффективные устройства в кампаниях ШПД","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Улучшение CTR","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Настроить понижающие корректировки для планшетов в категорийных рекламных кампаниях.","result":"До отключения планшеты дали только 3 конверсии при CPA 2 573 ₽ — на 77% выше среднего. После исключения расход сократился на 7,7 тыс. ₽, а общее число конверсий выросло на 5%.","conclusion":"Отключение планшетов позволило исключить небольшой, но дорогой сегмент трафика без потери общего объёма конверсий.","dates":["2026-07-27","2026-08-03"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период 1: 20.07.2026 - 26.07.2026 · Период 2: 28.07.2026 - 03.08.2026","columns":["Тип устройства","Клики / Период 1","Клики / Период 2","Клики / Разница %","Клики / Разница","Расход / Период 1, ₽","Расход / Период 2, ₽","Расход / Разница %","Расход / Разница","Конверсии / Период 1","Конверсии / Период 2","Конверсии / Разница %","Конверсии / Разница","CPA / Период 1, ₽","CPA / Период 2, ₽","CPA / Разница %","CPA / Разница","CR / Период 1, %","CR / Период 2, %","CR / Разница %","CR / Разница"],"rows":[["Итого","1 574","1 646","4,57","72","305 559,5","347 852,56","13,84","42 293,06","210","221","5,24","11","1 455,05","1 573,99","8,17","118,94","13,34","13,43","0,67","0,09"],["Смартфоны","1 167","1 270","8,83","103","219 926,98","258 391,19","17,49","38 464,21","161","151","−6,21","−10","1 366,01","1 711,2","25,27","345,19","13,8","11,89","−13,84","−1,91"],["Десктопы","361","374","3,6","13","77 861,14","89 330,5","14,73","11 469,36","46","70","52,17","24","1 692,63","1 276,15","−24,61","−416,48","12,74","18,72","46,94","5,98"],["Планшеты","45","0","−100","−45","7 717,7","0","−100","−7 717,7","3","0","−100","−3","2 572,57","—","—","—","6,67","—","—","—"],["Connected TV","1","2","100","1","53,69","130,87","143,75","77,18","0","0","0","0","—","—","—","—","0","0","0","0"]]}],"statsPeriod":"Период 1: 20.07.2026 - 26.07.2026 · Период 2: 28.07.2026 - 03.08.2026"},{"id":42,"name":"Разделение мастер-кампаний по устройствам","rkRaw":"Мастер кампаний","groupRk":"Мастер кампаний","goal":"Повышение количества лидов","effect":"Высокая","priority":"Средний","hours":1.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Запустили на тест мастера кампаний с разделением по устройствам в Казани","result":"собираем данные","conclusion":"","dates":["2026-07-28","2026-08-07"],"hasResult":false,"ganttStatus":"progress","displayStatus":"Готово","displayBucket":"positive"},{"id":43,"name":"Запустить на тест товарную кампанию в ШПД","rkRaw":"Мастер кампаний","groupRk":"Мастер кампаний","goal":"Повышение количества лидов","effect":"Высокая","priority":"Средний","hours":1.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Запустили товарную кампанию в Санкт-Петербург","result":"За период 29.07 по 04.08 кампания принесла 496 конверсий при CPA 215 ₽ и CR 7,9%.","conclusion":"За первую неделю теста кампания показала высокую эффективность. Товарные объявления принесли 32 конверсии при CPA 295 ₽, что является отличным результатом для этого формата, однако объём пока остаётся небольшим. Продолжаем масштабировать размещение и дополнительно подготовим тестовые кампании в других регионах (Москва, Екатеринбург, Пермь).","dates":["2026-07-28","2026-08-04"],"hasResult":true,"ganttStatus":"result","displayStatus":"Готово","displayBucket":"positive","statsTables":[{"period":"Период: 29.07.2026 - 04.08.2026","columns":["Название кампании","№ Кампании","Тип объявления","Клики","Показы","Расход, ₽","Конверсии","CPA, ₽","CR, %"],"rows":[["Итого","—","—","6 280","72 769","106 450,64","496","214,62","7,9"],["b2c | 1rub | master | tovarnay | peterburg | net","713 123 474","Текстово-графическое","5 649","48 534","95 764","459","208,64","8,13"],["b2c | 1rub | master | tovarnay | peterburg | net","713 123 474","Товарное","570","20 021","9 429,65","32","294,68","5,61"],["b2c | 1rub | master | tovarnay | peterburg | net","713 123 474","Страницы каталога","61","4 213","1 256,99","5","251,4","8,2"],["b2c | 1rub | master | tovarnay | peterburg | net","713 123 474","Комбинаторное","0","1","0","0","—","—"]]}],"statsPeriod":"Период: 29.07.2026 - 04.08.2026"},{"id":45,"name":"Анализ категорийных ЕПК-кампаний ШПД","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Высокая","priority":"Высокий","hours":5.0,"marker":"в работе","markerBucket":"neutral","owner":"Агентство","what":"В категорийных ЕПК-кампаниях необходимо выделить поисковые запросы и ключевые фразы, которые одновременно обеспечивают конверсии и сохраняют приемлемую стоимость привлечения. Текущая структура не позволяет в полной мере управлять эффективными связками отдельно.","result":"собираем данные","conclusion":"","dates":["2026-08-06"],"hasResult":false,"ganttStatus":"progress","displayStatus":"в работе","displayBucket":"neutral"},{"id":47,"name":"Исключение автотаргета","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Средняя","priority":"Средний","hours":2.0,"marker":"в работе","markerBucket":"neutral","owner":"Агентство","what":"Предлагаем протестировать ограничение автотаргетинга в одном из регионов — Самаре (бренд+ категория) Казань и Челябинск (ренд). Для этого создадим отдельные брендовые и категорийные кампании, а используемую в каждой группе семантику дополнительно внесём в минус-фразы на уровне группы. Тест проведём с помощью A/B-эксперимента Яндекса. Результаты сравним по доле трафика с автотаргетинга и конверсионности ключевых фраз.","result":"собираем данные","conclusion":"","dates":["2026-08-07"],"hasResult":false,"ganttStatus":"progress","displayStatus":"в работе","displayBucket":"neutral"},{"id":48,"name":"Новый тест мастера кампаний по брендовой семантике","rkRaw":"Мастер кампаний","groupRk":"Мастер кампаний","goal":"Повышение количества лидов","effect":"Высокая","priority":"Средний","hours":1.0,"marker":"в работе","markerBucket":"neutral","owner":"Агентство","what":"Запускаем тест Мастер-кампаний, чтобы отдельно оценить эффективность брендового и небрендового трафика. Для получения более достоверных данных создадим две новые кампании: в первой полностью исключим брендовые запросы, во второй, наоборот, ограничим показы только брендовыми запросами. По итогам сравним объём и качество трафика, конверсии и CPA по каждому сценарию.","result":"собираем данные","conclusion":"","dates":["2026-08-06"],"hasResult":false,"ganttStatus":"progress","displayStatus":"в работе","displayBucket":"neutral"},{"id":49,"name":"Тест офлайн конверсий","rkRaw":"ЕПК","groupRk":"ЕПК","goal":"Повышение количества лидов","effect":"Высокая","priority":"Средний","hours":1.0,"marker":"Готово","markerBucket":"positive","owner":"Агентство","what":"Запустили тестирование офлайн-конверсий в кампании b2c | 1rub | performance | all_geo | search. В автостратегию добавили дополнительную цель, чтобы алгоритм учитывал офлайн-конверсии при обучении и оптимизировал показы на пользователей с более высокой вероятностью целевого действия. Дополнительно запустили отдельные брендовую и категорийную кампании на look-alike-аудиторию пользователей, совершивших офлайн-конверсии. По итогам теста оценим влияние новой цели на CR в целевое обращение в текущей кампании и отдельно проверим эффективность похожей аудитории.","result":"собираем данные","conclusion":"","dates":["2026-08-04","2026-08-13"],"hasResult":false,"ganttStatus":"progress","displayStatus":"Готово","displayBucket":"positive"}];
+
+function esc(s){return s==null?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function d(s){return new Date(s+'T00:00:00')}
+function days(a,b){return (b-a)/86400000}
+const MON=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+function fmt(dt){return dt.getDate()+'.'+MON[dt.getMonth()]}
+function fmtFull(dt){const p=n=>String(n).padStart(2,'0');
+  return p(dt.getDate())+'.'+p(dt.getMonth()+1)+'.'+dt.getFullYear()}
+function toInput(dt){const p=n=>String(n).padStart(2,'0');
+  return dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate())}
+function addDays(dt,n){const r=new Date(dt);r.setDate(r.getDate()+n);return r}
+function wordf(n,a,b,c){const m=n%100,k=n%10;return m>=11&&m<=14?c:k===1?a:k>=2&&k<=4?b:c}
+
+/* Highlight figures in prose. Negative lookahead, not \b — JS word boundaries
+   don't work against Cyrillic. */
+const NUM_RE=/(?:[\u2212+-]\s?)?\d[\d\s]{0,9}(?:[.,]\d+)?\s?(?:%|\u20bd|тыс\.?\s?\u20bd?|млн\.?\s?\u20bd?|раза?(?![а-яё])|раз(?![а-яё])|п\.?п\.?|конверси[а-яё]*|лид(?:ов|а|ы)?(?![а-яё])|клик(?:ов|а|и)?(?![а-яё])|заявок|заявк[аи]|р(?![а-яё]))/gi;
+function hl(t){const e=esc(t);return e?e.replace(NUM_RE,m=>'<mark>'+m.trim()+'</mark>'):''}
+
+/* The team's explicit marker outranks the derived status: «приостановлена» is a
+   rejection even when no conclusion was written. */
+const SCALE_MARKERS=['масштабируем','внедрили','внедряем'];
+function bucket(h){
+  const m=(h.marker||'').toLowerCase().trim();
+  if(m==='не масштабируем'||m==='приостановлена') return 'reject';
+  if(SCALE_MARKERS.includes(m)) return 'scale';
+  if(h.ganttStatus==='progress') return 'pending';
+  return h.hasResult?'scale':'pending';
+}
+H.forEach(h=>{h._b=bucket(h)});
+
+/* ---------- key figures out of the source's own "Итого" row ---------- */
+const IS_TOTAL=/итог/i;
+function headerUnit(x){const m=String(x).match(/^(.*?),\s*(₽|%)\s*$/);
+  return m?[m[1].trim(),m[2]]:[String(x).trim(),'']}
+function pickCol(cols,names){
+  for(const n of names){
+    const i=cols.findIndex(c=>{const [lab]=headerUnit(c);
+      return lab.toLowerCase()===n && !/разница|период 2/i.test(c)});
+    if(i!==-1) return i;
+  }
+  for(const n of names){
+    const i=cols.findIndex(c=>c.toLowerCase().startsWith(n)&&!/разница/i.test(c));
+    if(i!==-1) return i;
+  }
+  return -1;
+}
+const FIG_MAP=[['Расход',['расход']],['Конверсии',['конверсии','конверсии на сайте','лиды']],
+               ['CPA / CPL',['cpa','cpl']],['CR',['cr']]];
+function figures(h){
+  const t=(h.statsTables&&h.statsTables[0])||null;
+  if(!t||!t.rows||!t.rows.length) return {list:[],rowLabel:''};
+  let row=t.rows.find(r=>IS_TOTAL.test(String(r[0]||'').trim())), rowLabel='';
+  if(!row){row=t.rows[0]; if(t.rows.length>1) rowLabel=String(row[0]||'').trim()}
+  const list=[];
+  FIG_MAP.forEach(([label,names])=>{
+    const i=pickCol(t.columns,names); if(i===-1) return;
+    const raw=String(row[i]===undefined?'':row[i]).trim();
+    if(!raw||raw==='—') return;
+    let [,u]=headerUnit(t.columns[i]);
+    if(!u) for(const o of t.rows){const v=String(o[i]||'').trim();
+      if(v.endsWith('₽')){u='₽';break} if(v.endsWith('%')){u='%';break}}
+    list.push([label, /[₽%]$/.test(raw)?raw:(u?raw+(u==='₽'?' ₽':'%'):raw)]);
+  });
+  return {list,rowLabel};
+}
+H.forEach(h=>{h._f=figures(h)});
+
+/* ---------- verdict ---------- */
+const isScaleM=h=>SCALE_MARKERS.includes((h.marker||'').toLowerCase().trim());
+const nScale=H.filter(h=>isScaleM(h)).length;
+const nDone=H.filter(h=>h._b==='scale'&&!isScaleM(h)).length;
+const nReject=H.filter(h=>h._b==='reject').length;
+const nPending=H.filter(h=>h._b==='pending').length;
+const hours=H.reduce((s,h)=>s+(h.hours||0),0);
+const withSrc=H.filter(h=>h.statsTables&&h.statsTables.length).length;
+const allD=H.flatMap(h=>h.dates.map(d)).sort((a,b)=>a-b);
+
+document.getElementById('lead').innerHTML=
+  'С <b>'+fmtFull(allD[0])+'</b> по <b>'+fmtFull(allD[allD.length-1])+'</b> проверено <b>'+
+  H.length+'</b> '+wordf(H.length,'гипотеза','гипотезы','гипотез')+', затрачено <b>'+
+  String(hours).replace('.',',')+'</b> ч. С детальной статистикой — <b>'+withSrc+'</b> '+
+  wordf(withSrc,'гипотеза','гипотезы','гипотез')+'.';
+
+const OC=[['var(--scale)',nScale,'масштабируем или внедрили решение'],
+          ['#3f8f74',nDone,'завершены, решение зафиксировано в бэклоге'],
+          ['var(--reject)',nReject,'отклонили: не масштабируем или приостановили'],
+          ['var(--pending)',nPending,'ещё идут или собираем данные']].filter(o=>o[1]>0);
+document.getElementById('outcome').innerHTML=OC.map(o=>
+  '<span style="flex:'+o[1]+';background:'+o[0]+'" title="'+o[2]+'">'+o[1]+'</span>').join('');
+document.getElementById('okey').innerHTML=OC.map(o=>
+  '<span><i style="background:'+o[0]+'"></i>'+o[2]+'</span>').join('');
+document.getElementById('stats').innerHTML=
+  '<div class="stat"><b>'+H.length+'</b><span>гипотез в бэклоге</span></div>'+
+  '<div class="stat"><b style="color:var(--scale)">'+(nScale+nDone)+'</b><span>дошли до результата</span></div>'+
+  '<div class="stat"><b style="color:var(--reject)">'+nReject+'</b><span>отклонили по итогам теста</span></div>'+
+  '<div class="stat"><b>'+String(hours).replace('.',',')+' ч</b><span>работы агентства</span></div>';
+
+/* ---------- ONE filter state, driving the one timeline ---------- */
+let fStatus='all', fChannel='Все', fQuery='', openId=null;
+const dFrom=document.getElementById('dFrom'), dTo=document.getElementById('dTo');
+
+function passes(h){
+  if(fStatus!=='all'&&h._b!==fStatus) return false;
+  if(fChannel!=='Все'&&h.groupRk!==fChannel) return false;
+  if(fQuery&&!(String(h.id).includes(fQuery)||h.name.toLowerCase().includes(fQuery))) return false;
+  const a=dFrom.value?d(dFrom.value):null, b=dTo.value?d(dTo.value):null;
+  if(a||b){
+    if(!h.dates.length) return false;
+    const ds=h.dates.map(d);
+    if(a&&ds[ds.length-1]<a) return false;
+    if(b&&ds[0]>b) return false;
+  }
+  return true;
+}
+function chipRow(el,items,current,pick){
+  el.innerHTML='';
+  items.forEach(it=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='chip'+(it.key===current?' on':'');
+    b.innerHTML=esc(it.label)+(it.count!=null?'<span class="c">'+it.count+'</span>':'');
+    b.addEventListener('click',()=>pick(it.key));
+    el.appendChild(b);
+  });
+}
+const STATUSES=[{key:'all',label:'Все'},
+  {key:'scale',label:'Масштабируем / внедрили',count:H.filter(h=>h._b==='scale').length},
+  {key:'reject',label:'Отклонили',count:nReject},
+  {key:'pending',label:'В работе',count:nPending}];
+const CHANNELS=[{key:'Все',label:'Все'},
+  ...Array.from(new Set(H.map(h=>h.groupRk))).map(g=>
+    ({key:g,label:g,count:H.filter(h=>h.groupRk===g).length}))];
+function drawStatus(){chipRow(document.getElementById('fStatus'),STATUSES,fStatus,k=>{
+  fStatus=k;drawStatus();render()})}
+function drawChannel(){chipRow(document.getElementById('fChannel'),CHANNELS,fChannel,k=>{
+  fChannel=k;drawChannel();render()})}
+drawStatus();drawChannel();
+
+document.getElementById('fSearch').addEventListener('input',e=>{
+  fQuery=e.target.value.trim().toLowerCase();render()});
+document.getElementById('fReset').addEventListener('click',()=>{
+  fStatus='all';fChannel='Все';fQuery='';
+  document.getElementById('fSearch').value='';
+  dFrom.value='';dTo.value='';
+  document.getElementById('ddLabel').textContent='Весь период';
+  ddPanel.querySelectorAll('.dd-item').forEach(i=>i.classList.toggle('on',i.dataset.preset==='all'));
+  drawStatus();drawChannel();render();
+});
+
+/* ---------- period dropdown ---------- */
+const ddEl=document.getElementById('dd'), ddBtn=document.getElementById('ddBtn'),
+      ddPanel=document.getElementById('ddPanel'), ddCustom=document.getElementById('ddCustom'),
+      ddLabel=document.getElementById('ddLabel');
+const minD=allD[0], maxD=allD[allD.length-1];
+dFrom.min=dTo.min=toInput(minD); dFrom.max=dTo.max=toInput(maxD);
+ddBtn.addEventListener('click',e=>{e.stopPropagation();ddEl.classList.toggle('open')});
+document.addEventListener('click',e=>{if(!ddEl.contains(e.target))ddEl.classList.remove('open')});
+function apply(a,b,label,key){
+  dFrom.value=a?toInput(a):''; dTo.value=b?toInput(b):'';
+  ddLabel.textContent=label;
+  ddPanel.querySelectorAll('.dd-item').forEach(i=>i.classList.toggle('on',i.dataset.preset===key));
+  ddEl.classList.remove('open'); render();
+}
+ddPanel.querySelector('[data-preset="all"]').addEventListener('click',()=>{
+  ddCustom.classList.remove('show');apply(null,null,'Весь период','all')});
+ddPanel.querySelector('[data-preset="custom"]').addEventListener('click',()=>
+  ddCustom.classList.toggle('show'));
+document.getElementById('ddApply').addEventListener('click',()=>{
+  if(!dFrom.value&&!dTo.value) return;
+  const a=dFrom.value?d(dFrom.value):null,b=dTo.value?d(dTo.value):null;
+  ddCustom.classList.remove('show');
+  apply(a,b,a&&b?fmtFull(a)+'–'+fmtFull(b):a?'с '+fmtFull(a):'по '+fmtFull(b),'custom');
+});
+ddPanel.querySelector('[data-preset="last7"]').addEventListener('click',()=>{
+  ddCustom.classList.remove('show');apply(addDays(TODAY,-6),TODAY,'Последние 7 дней','last7')});
+ddPanel.querySelector('[data-preset="last30"]').addEventListener('click',()=>{
+  ddCustom.classList.remove('show');apply(addDays(TODAY,-29),TODAY,'Последние 30 дней','last30')});
+const MONTHS=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+(function(){
+  const seen=new Set(),out=[];let c=new Date(minD.getFullYear(),minD.getMonth(),1);
+  while(c<=maxD){const k=c.getFullYear()+'-'+c.getMonth();
+    if(!seen.has(k)){seen.add(k);out.push({y:c.getFullYear(),m:c.getMonth()})}
+    c.setMonth(c.getMonth()+1)}
+  const box=document.getElementById('ddMonths');
+  out.forEach((o,i)=>{
+    const a=new Date(o.y,o.m,1),b=new Date(o.y,o.m+1,0);
+    const it=document.createElement('div');
+    it.className='dd-item'; it.dataset.preset='m'+i;
+    it.innerHTML=MONTHS[o.m]+' '+o.y+'<span class="ck">✓</span>';
+    it.addEventListener('click',()=>{ddCustom.classList.remove('show');
+      apply(a<minD?minD:a,b>maxD?maxD:b,MONTHS[o.m]+' '+o.y,'m'+i)});
+    box.appendChild(it);
+  });
+})();
+
+/* ---------- geometry ---------- */
+const r0=new Date(Math.min(...allD)); r0.setDate(r0.getDate()-2);
+const r1=new Date(Math.max(...allD,TODAY)); r1.setDate(r1.getDate()+3);
+const span=days(r0,r1), step=span>60?7:span>30?4:2;
+const pct=dt=>days(r0,dt)/span*100;
+const TODAY_PCT=pct(TODAY);
+(function(){
+  const ax=document.getElementById('axis');
+  for(let i=0;i<=span;i+=step){
+    const dt=new Date(r0);dt.setDate(dt.getDate()+i);
+    const p=pct(dt);
+    // "сегодня" needs ~4% of clear space or the two captions overprint.
+    if(Math.abs(p-TODAY_PCT)<4.2) continue;
+    const t=document.createElement('i');t.style.left=p+'%';t.textContent=fmt(dt);
+    ax.appendChild(t);
+  }
+  const t=document.createElement('i');
+  t.className='today'+(TODAY_PCT>86?' flip':'');
+  t.style.left=TODAY_PCT+'%';t.textContent='сегодня';ax.appendChild(t);
+})();
+const GRID=(function(){
+  const g=[];
+  for(let i=0;i<=span;i+=step){const dt=new Date(r0);dt.setDate(dt.getDate()+i);
+    g.push('<span class="g" style="left:'+pct(dt)+'%"></span>')}
+  g.push('<span class="g today" style="left:'+pct(TODAY)+'%"></span>');
+  return g.join('');
+})();
+
+const CHEV='<svg width="11" height="7" viewBox="0 0 10 6" aria-hidden="true">'+
+  '<path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.9" fill="none" '+
+  'stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ---------- the expanded hypothesis ---------- */
+function srcTable(t){
+  const head=t.columns.map(c=>'<th>'+esc(c)+'</th>').join('');
+  const body=t.rows.map(r=>'<tr'+(IS_TOTAL.test(String(r[0]||'').trim())?' class="tot"':'')+'>'+
+    r.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('');
+  return (t.period?'<p class="cap">'+esc(t.period)+'</p>':'')+
+    '<div class="src"><table class="st"><thead><tr>'+head+'</tr></thead><tbody>'+body+
+    '</tbody></table></div>';
+}
+function panel(h){
+  const ds=h.dates.map(d);
+  const per=ds.length?(ds.length===1?fmt(ds[0]):fmt(ds[0])+' — '+fmt(ds[ds.length-1])):'даты не указаны';
+  const figs=h._f.list.length
+    ? '<div class="figs">'+h._f.list.map(([k,v])=>
+        '<div class="fig"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>').join('')+
+      '</div>'+(h._f.rowLabel?'<p class="cap">цифры за '+esc(h._f.rowLabel)+'</p>':'')
+    : '';
+  let data;
+  if(h.statsTables&&h.statsTables.length){
+    data=h.statsTables.map(srcTable).join('');
+  }else if(h.statsTable&&h.statsTable.rows&&h.statsTable.rows.length){
+    data=srcTable(h.statsTable)+(h.statsSource?'<p class="cap">источник: '+esc(h.statsSource)+'</p>':'');
+  }else{
+    data='<div class="no-src">Во вкладке «статистика по гипотезам» детальной таблицы по этой '+
+      'гипотезе нет — ниже только текстовый итог из бэклога.</div>';
+  }
+  return '<div class="panel">'+
+    '<div class="pmeta">'+
+      '<span class="pill '+h._b+'">'+esc(h.displayStatus)+'</span>'+
+      (h.displayStatus!==h.marker?'<span class="orig">по таблице: «'+esc(h.marker)+'»</span>':'')+
+      '<span class="m">'+esc(h.groupRk)+'</span>'+
+      '<span class="m">период: <b>'+per+'</b></span>'+
+      (h.goal?'<span class="m">цель: '+esc(h.goal.toLowerCase())+'</span>':'')+
+      '<span class="m">трудозатраты: <b>'+String(h.hours).replace('.',',')+' ч</b></span>'+
+    '</div>'+
+    figs+
+    '<p class="plabel">Результаты теста</p>'+data+
+    '<div class="concl">'+
+      '<div class="cgrid">'+
+        '<div class="cblock"><span>Что сделали</span><p>'+(esc(h.what)||'—')+'</p></div>'+
+        '<div class="cblock"><span>Результат</span><p>'+(hl(h.result)||'—')+'</p></div>'+
+      '</div>'+
+      (h.conclusion?'<div class="takeaway"><span>Вывод</span><p>'+hl(h.conclusion)+'</p></div>':'')+
+    '</div></div>';
+}
+
+/* ---------- render ---------- */
+const TL=H.filter(h=>h.dates.length>0);
+const noDates=H.length-TL.length;
+document.getElementById('tlNote').textContent=noDates
+  ? ('Ещё '+noDates+' '+wordf(noDates,'гипотеза','гипотезы','гипотез')+' без дат теста не показаны.')
+  : '';
+
+function render(){
+  const box=document.getElementById('rows');
+  const list=TL.filter(passes);
+  document.getElementById('empty').style.display=list.length?'none':'block';
+  const n=H.filter(passes).length;
+  document.getElementById('fCount').textContent =
+    n===H.length ? ('показаны все '+H.length) : ('найдено '+n+' из '+H.length);
+
+  box.innerHTML=list.map(h=>{
+    const ds=h.dates.map(d), a=ds[0], b=ds[ds.length-1];
+    const l=pct(a), w=Math.max(pct(b)-l,.6);
+    const ticks=ds.slice(1,-1).map(m=>
+      '<span class="tick" style="left:'+((pct(m)-l)/w*100)+'%"></span>').join('');
+    const per=ds.length>1?fmt(a)+'–'+fmt(b):fmt(a);
+    const open=openId===h.id;
+    return '<div class="item'+(open?' open':'')+'">'+
+      '<button type="button" class="row" data-id="'+h.id+'" aria-expanded="'+open+'">'+
+        '<span class="lab"><span class="id">#'+h.id+'</span>'+
+          '<span class="nm" title="'+esc(h.name)+'">'+esc(h.name)+'</span>'+
+          '<span class="per">'+per+'</span></span>'+
+        '<span class="track">'+GRID+
+          '<span class="bar '+h._b+'" style="left:'+l+'%;width:'+w+'%">'+ticks+'</span>'+
+        '</span>'+
+        '<span class="caret"><i>'+CHEV+'</i></span>'+
+      '</button>'+
+      (open?panel(h):'')+
+    '</div>';
+  }).join('');
+}
+document.getElementById('rows').addEventListener('click',e=>{
+  const btn=e.target.closest('.row'); if(!btn) return;
+  const id=Number(btn.dataset.id);
+  openId = openId===id ? null : id;
+  render();
+  if(openId!=null){
+    const el=document.querySelector('.row[data-id="'+openId+'"]');
+    if(el&&el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+});
+render();
+</script>
+</body>
+</html>
